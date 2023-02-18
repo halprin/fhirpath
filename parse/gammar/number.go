@@ -1,8 +1,9 @@
-package parse
+package gammar
 
 import (
 	"fmt"
 	"github.com/halprin/fhirpath/lex"
+	"github.com/halprin/fhirpath/parse"
 	"strconv"
 )
 
@@ -11,7 +12,7 @@ type Number struct {
 	ValueFloat float64
 }
 
-func NewNumber(buffer TokenBuffer) (Number, error) {
+func NewNumber(buffer parse.TokenBuffer) (Number, error) {
 	integerToken, err := buffer.Pop()
 	if err != nil {
 		buffer.Push()
@@ -20,7 +21,7 @@ func NewNumber(buffer TokenBuffer) (Number, error) {
 
 	if integerToken.Type != lex.NUMBER {
 		buffer.Push()
-		return Number{}, NoGrammarParse
+		return Number{}, parse.NoGrammarParse
 	}
 
 	periodToken, err := buffer.Pop()
@@ -47,7 +48,7 @@ func NewNumber(buffer TokenBuffer) (Number, error) {
 
 	if decimalToken.Type != lex.NUMBER {
 		buffer.Push()
-		return Number{}, NoGrammarParse
+		return Number{}, parse.NoGrammarParse
 	}
 
 	floatValue, err := strconv.ParseFloat(integerToken.Literal+periodToken.Literal+decimalToken.Literal, 64)

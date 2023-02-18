@@ -1,14 +1,15 @@
-package parse
+package gammar
 
 import (
 	"github.com/halprin/fhirpath/lex"
+	"github.com/halprin/fhirpath/parse"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"testing"
 )
 
 func TestNumberDoesntParseImmediatelyDueToEof(t *testing.T) {
-	tokenBuffer := TokenBuffer{
+	tokenBuffer := parse.TokenBuffer{
 		Lexer: lex.NewLexer(""),
 	}
 
@@ -18,17 +19,17 @@ func TestNumberDoesntParseImmediatelyDueToEof(t *testing.T) {
 }
 
 func TestNumberDoesntParseImmediatelyDueToNoNumber(t *testing.T) {
-	tokenBuffer := TokenBuffer{
+	tokenBuffer := parse.TokenBuffer{
 		Lexer: lex.NewLexer("dogcow.moof"),
 	}
 
 	_, err := NewNumber(tokenBuffer)
 
-	assert.ErrorIs(t, err, NoGrammarParse)
+	assert.ErrorIs(t, err, parse.NoGrammarParse)
 }
 
 func TestNumberParsesInteger(t *testing.T) {
-	tokenBuffer := TokenBuffer{
+	tokenBuffer := parse.TokenBuffer{
 		Lexer: lex.NewLexer("26abc"),
 	}
 
@@ -39,17 +40,17 @@ func TestNumberParsesInteger(t *testing.T) {
 }
 
 func TestNumberFailsParseAfterPeriod(t *testing.T) {
-	tokenBuffer := TokenBuffer{
+	tokenBuffer := parse.TokenBuffer{
 		Lexer: lex.NewLexer("26.abc"),
 	}
 
 	_, err := NewNumber(tokenBuffer)
 
-	assert.ErrorIs(t, err, NoGrammarParse)
+	assert.ErrorIs(t, err, parse.NoGrammarParse)
 }
 
 func TestNumberParsesFloat(t *testing.T) {
-	tokenBuffer := TokenBuffer{
+	tokenBuffer := parse.TokenBuffer{
 		Lexer: lex.NewLexer("26.32abc"),
 	}
 
