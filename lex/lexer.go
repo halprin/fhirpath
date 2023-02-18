@@ -65,6 +65,8 @@ func (receiver Lexer) NextToken() (Token, error) {
 		return Token{Type: STAR, Literal: string(character)}, nil
 	case '/':
 		return Token{Type: SLASH, Literal: string(character)}, nil
+	case '\\':
+		return Token{Type: BACK_SLASH, Literal: string(character)}, nil
 	default:
 		return receiver.checkForMultiCharacterToken(character)
 	}

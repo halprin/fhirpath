@@ -30,4 +30,6 @@ const (
 	DASH
 	STAR
 	SLASH
+
+	BACK_SLASH
 )

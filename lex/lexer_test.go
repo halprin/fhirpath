@@ -75,6 +75,11 @@ var starToken = Token{
 	Literal: "*",
 }
 
+var backSlashToken = Token{
+	Type:    BACK_SLASH,
+	Literal: "\\",
+}
+
 func TestLexerWithFhirPath(t *testing.T) {
 	expectedTokens := []Token{{
 		Type:    ALPHA_NUMERIC,
@@ -109,12 +114,12 @@ func TestRandomTokens(t *testing.T) {
 	expectedTokens := []Token{parenthesisEndToken, parenthesisStartToken, trueToken, periodToken, falseToken, atToken, {
 		Type:    NUMBER,
 		Literal: "26",
-	}, andToken, quoteToken, orToken, plusToken, dashToken, {
+	}, backSlashToken, andToken, quoteToken, orToken, plusToken, dashToken, {
 		Type:    WHITE_SPACE,
 		Literal: " \t\n\r",
 	}, slashToken, starToken}
 
-	tokens, err := NewLexer(")(true.false@26and'or+- \t\n\r/*").Lex()
+	tokens, err := NewLexer(")(true.false@26\\and'or+- \t\n\r/*").Lex()
 
 	assert.NoError(t, err)
 	assert.Equal(t, expectedTokens, tokens)
