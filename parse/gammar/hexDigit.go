@@ -27,7 +27,13 @@ func NewHexDigit(buffer parse.TokenBuffer) (HexDigit, error) {
 		return HexDigit{}, parse.NoGrammarParse
 	}
 
-	//we probably split a token, so push back on new token of what remains
+	if len(token.Literal) > 1 {
+		//we need to split this token since it is longer than just one character; push the split back onto the buffer
+		buffer.PushToken(lex.Token{
+			Type:    token.Type,
+			Literal: token.Literal[1:len(token.Literal)],
+		})
+	}
 
 	return HexDigit{Value: rune(token.Literal[0])}, nil
 }
