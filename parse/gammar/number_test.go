@@ -9,9 +9,7 @@ import (
 )
 
 func TestNumberDoesntParseImmediatelyDueToEof(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
-		Lexer: lex.NewLexer(""),
-	}
+	tokenBuffer := parse.NewTokenBuffer(lex.NewLexer(""))
 
 	_, err := NewNumber(tokenBuffer)
 
@@ -19,9 +17,7 @@ func TestNumberDoesntParseImmediatelyDueToEof(t *testing.T) {
 }
 
 func TestNumberDoesntParseImmediatelyDueToNoNumber(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
-		Lexer: lex.NewLexer("dogcow.moof"),
-	}
+	tokenBuffer := parse.NewTokenBuffer(lex.NewLexer("dogcow.moof"))
 
 	_, err := NewNumber(tokenBuffer)
 
@@ -29,9 +25,7 @@ func TestNumberDoesntParseImmediatelyDueToNoNumber(t *testing.T) {
 }
 
 func TestNumberParsesInteger(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
-		Lexer: lex.NewLexer("26abc"),
-	}
+	tokenBuffer := parse.NewTokenBuffer(lex.NewLexer("26abc"))
 
 	number, err := NewNumber(tokenBuffer)
 	assert.NoError(t, err)
@@ -40,9 +34,7 @@ func TestNumberParsesInteger(t *testing.T) {
 }
 
 func TestNumberFailsParseAfterPeriod(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
-		Lexer: lex.NewLexer("26.abc"),
-	}
+	tokenBuffer := parse.NewTokenBuffer(lex.NewLexer("26.abc"))
 
 	_, err := NewNumber(tokenBuffer)
 
@@ -50,9 +42,7 @@ func TestNumberFailsParseAfterPeriod(t *testing.T) {
 }
 
 func TestNumberParsesFloat(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
-		Lexer: lex.NewLexer("26.32abc"),
-	}
+	tokenBuffer := parse.NewTokenBuffer(lex.NewLexer("26.32abc"))
 
 	number, err := NewNumber(tokenBuffer)
 	assert.NoError(t, err)

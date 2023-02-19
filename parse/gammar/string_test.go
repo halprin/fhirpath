@@ -8,9 +8,7 @@ import (
 )
 
 func TestStringWorks(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
-		Lexer: lex.NewLexer("'keep a true statement or no +'and"),
-	}
+	tokenBuffer := parse.NewTokenBuffer(lex.NewLexer("'keep a true statement or no +'and"))
 
 	stringGrammar, err := NewString(tokenBuffer)
 	assert.NoError(t, err)
@@ -19,9 +17,7 @@ func TestStringWorks(t *testing.T) {
 }
 
 func TestStringEmpty(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
-		Lexer: lex.NewLexer("''and"),
-	}
+	tokenBuffer := parse.NewTokenBuffer(lex.NewLexer("''and"))
 
 	stringGrammar, err := NewString(tokenBuffer)
 	assert.NoError(t, err)
@@ -30,9 +26,7 @@ func TestStringEmpty(t *testing.T) {
 }
 
 func TestStringWithQuoteInIt(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
-		Lexer: lex.NewLexer("'I like \\' in my strings'"),
-	}
+	tokenBuffer := parse.NewTokenBuffer(lex.NewLexer("'I like \\' in my strings'"))
 
 	stringGrammar, err := NewString(tokenBuffer)
 	assert.NoError(t, err)
@@ -42,9 +36,7 @@ func TestStringWithQuoteInIt(t *testing.T) {
 
 //TODO: support needs to be added for escapes
 //func TestStringWithATabEscape(t *testing.T) {
-//	tokenBuffer := parse.TokenBuffer{
-//		Lexer: lex.NewLexer("'we have a \\tab in it'"),
-//	}
+//	tokenBuffer := parse.NewTokenBuffer(lex.NewLexer("'we have a \\tab in it'"))
 //
 //	stringGrammar, err := NewString(tokenBuffer)
 //	assert.NoError(t, err)

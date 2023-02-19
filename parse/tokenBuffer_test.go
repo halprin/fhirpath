@@ -7,9 +7,7 @@ import (
 )
 
 func TestPopBringsTheTokensInTheCorrectOrder(t *testing.T) {
-	tokenBuffer := TokenBuffer{
-		Lexer: lex.NewLexer("dogcow.moof"),
-	}
+	tokenBuffer := NewTokenBuffer(lex.NewLexer("dogcow.moof"))
 
 	firstToken, err := tokenBuffer.Pop()
 	assert.NoError(t, err)
@@ -37,9 +35,7 @@ func TestPopBringsTheTokensInTheCorrectOrder(t *testing.T) {
 }
 
 func TestPopAndPushBringsBackTheSameToken(t *testing.T) {
-	tokenBuffer := TokenBuffer{
-		Lexer: lex.NewLexer("dogcow.moof"),
-	}
+	tokenBuffer := NewTokenBuffer(lex.NewLexer("dogcow.moof"))
 
 	firstToken, err := tokenBuffer.Pop()
 	assert.NoError(t, err)
@@ -53,9 +49,7 @@ func TestPopAndPushBringsBackTheSameToken(t *testing.T) {
 }
 
 func TestMultiplePopAndPushBringsBackTheSameToken(t *testing.T) {
-	tokenBuffer := TokenBuffer{
-		Lexer: lex.NewLexer("dogcow.moof.true"),
-	}
+	tokenBuffer := NewTokenBuffer(lex.NewLexer("dogcow.moof.true"))
 
 	firstToken, err := tokenBuffer.Pop()
 	assert.NoError(t, err)

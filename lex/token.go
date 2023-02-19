@@ -6,7 +6,8 @@ type Token struct {
 }
 
 const (
-	PERIOD int = iota
+	INVALID int = iota
+	PERIOD
 
 	ALPHA_NUMERIC
 	NUMBER

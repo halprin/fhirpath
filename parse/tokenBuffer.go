@@ -2,19 +2,27 @@ package parse
 
 import (
 	"github.com/halprin/fhirpath/lex"
+	"github.com/halprin/fhirpath/linkedList"
 )
 
 type TokenBuffer struct {
-	Lexer       lex.Lexer
-	buffer      []lex.Token
-	bufferIndex int
+	Lexer  lex.Lexer
+	buffer *linkedList.Node
+}
+
+func NewTokenBuffer(lexer lex.Lexer) TokenBuffer {
+	return TokenBuffer{
+		Lexer:  lexer,
+		buffer: &linkedList.Node{},
+	}
 }
 
 func (receiver *TokenBuffer) Pop() (lex.Token, error) {
-	if receiver.bufferIndex <= len(receiver.buffer)-1 {
-		token := receiver.buffer[receiver.bufferIndex]
-		receiver.bufferIndex++
-		return token, nil
+
+	if receiver.buffer.Next != nil {
+		//we've backtracked and need to return a buffered token
+		receiver.buffer = receiver.buffer.Next
+		return receiver.buffer.Value, nil
 	}
 
 	token, err := receiver.Lexer.NextToken()
@@ -22,18 +30,21 @@ func (receiver *TokenBuffer) Pop() (lex.Token, error) {
 		return lex.Token{}, err
 	}
 
-	receiver.buffer = append(receiver.buffer, token)
-	receiver.bufferIndex++
+	receiver.buffer = receiver.buffer.InsertAfter(token)
 
 	return token, nil
 }
 
 func (receiver *TokenBuffer) Push() {
-	receiver.bufferIndex--
+	if receiver.buffer.Previous == nil {
+		return
+	}
+
+	receiver.buffer = receiver.buffer.Previous
 }
 
 func (receiver *TokenBuffer) PushToken(token lex.Token) {
 	//TODO: this won't work; we need a linked list or something because what if we insert when the bufferIndex points to the middle of the buffer?  We don't want to shift everything.
-	receiver.buffer = append(receiver.buffer, token)
-	receiver.bufferIndex--
+	//receiver.buffer = append(receiver.buffer, token)
+	//receiver.bufferIndex--
 }
