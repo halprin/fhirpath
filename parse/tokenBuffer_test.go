@@ -70,3 +70,30 @@ func TestMultiplePopAndPushBringsBackTheSameToken(t *testing.T) {
 
 	assert.Equal(t, firstToken, tokenAgain)
 }
+
+func TestInsertingATokenWithPopingAndPushing(t *testing.T) {
+	tokenBuffer := NewTokenBuffer(lex.NewLexer("dogcow.moof.true"))
+
+	_, _ = tokenBuffer.Pop()
+	periodToken, err := tokenBuffer.Pop()
+	assert.NoError(t, err)
+
+	tokenBuffer.Push()
+
+	insertedToken := lex.Token{
+		Type:    lex.SLASH,
+		Literal: "/",
+	}
+
+	tokenBuffer.PushToken(insertedToken)
+
+	actualInsertedToken, err := tokenBuffer.Pop()
+	assert.NoError(t, err)
+
+	assert.Equal(t, insertedToken, actualInsertedToken)
+
+	afterInsertedToken, err := tokenBuffer.Pop()
+	assert.NoError(t, err)
+
+	assert.Equal(t, periodToken, afterInsertedToken)
+}

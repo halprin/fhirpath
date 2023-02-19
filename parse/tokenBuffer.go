@@ -44,7 +44,5 @@ func (receiver *TokenBuffer) Push() {
 }
 
 func (receiver *TokenBuffer) PushToken(token lex.Token) {
-	//TODO: this won't work; we need a linked list or something because what if we insert when the bufferIndex points to the middle of the buffer?  We don't want to shift everything.
-	//receiver.buffer = append(receiver.buffer, token)
-	//receiver.bufferIndex--
+	receiver.buffer.InsertAfter(token)
 }
