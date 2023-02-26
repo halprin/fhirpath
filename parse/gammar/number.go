@@ -19,7 +19,7 @@ func NewNumber(buffer parse.TokenBuffer) (Number, error) {
 		return Number{}, err
 	}
 
-	if integerToken.Type != lex.NUMBER {
+	if integerToken.Type != lex.NUMERIC {
 		buffer.Push()
 		return Number{}, parse.NoGrammarParse
 	}
@@ -46,7 +46,7 @@ func NewNumber(buffer parse.TokenBuffer) (Number, error) {
 		return Number{}, err
 	}
 
-	if decimalToken.Type != lex.NUMBER {
+	if decimalToken.Type != lex.NUMERIC {
 		buffer.Push()
 		return Number{}, parse.NoGrammarParse
 	}

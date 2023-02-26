@@ -14,7 +14,7 @@ func TestPopBringsTheTokensInTheCorrectOrder(t *testing.T) {
 	firstToken, err := tokenBuffer.Pop()
 	assert.NoError(t, err)
 	assert.Equal(t, lex.Token{
-		Type:    lex.ALPHA_NUMERIC,
+		Type:    lex.ALPHA,
 		Literal: "dogcow",
 	}, firstToken)
 
@@ -28,7 +28,7 @@ func TestPopBringsTheTokensInTheCorrectOrder(t *testing.T) {
 	thirdToken, err := tokenBuffer.Pop()
 	assert.NoError(t, err)
 	assert.Equal(t, lex.Token{
-		Type:    lex.ALPHA_NUMERIC,
+		Type:    lex.ALPHA,
 		Literal: "moof",
 	}, thirdToken)
 

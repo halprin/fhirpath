@@ -82,25 +82,25 @@ var backSlashToken = Token{
 
 func TestLexerWithFhirPath(t *testing.T) {
 	expectedTokens := []Token{{
-		Type:    ALPHA_NUMERIC,
+		Type:    ALPHA,
 		Literal: "entry",
 	}, periodToken, {
-		Type:    ALPHA_NUMERIC,
+		Type:    ALPHA,
 		Literal: "resource",
 	}, periodToken, {
-		Type:    ALPHA_NUMERIC,
+		Type:    ALPHA,
 		Literal: "ofType",
 	}, parenthesisStartToken, {
-		Type:    ALPHA_NUMERIC,
+		Type:    ALPHA,
 		Literal: "Patient",
 	}, spaceToken, {
 		Type:    OR,
 		Literal: "or",
 	}, spaceToken, {
-		Type:    ALPHA_NUMERIC,
+		Type:    ALPHA,
 		Literal: "ServiceRequest",
 	}, parenthesisEndToken, periodToken, {
-		Type:    ALPHA_NUMERIC,
+		Type:    ALPHA,
 		Literal: "id",
 	}}
 
@@ -112,7 +112,7 @@ func TestLexerWithFhirPath(t *testing.T) {
 
 func TestRandomTokens(t *testing.T) {
 	expectedTokens := []Token{parenthesisEndToken, parenthesisStartToken, trueToken, periodToken, falseToken, atToken, {
-		Type:    NUMBER,
+		Type:    NUMERIC,
 		Literal: "26",
 	}, backSlashToken, andToken, quoteToken, orToken, plusToken, dashToken, {
 		Type:    WHITE_SPACE,

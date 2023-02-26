@@ -8,8 +8,8 @@ type Token struct {
 const (
 	PERIOD int = iota
 
-	ALPHA_NUMERIC
-	NUMBER
+	ALPHA
+	NUMERIC
 
 	WHITE_SPACE
 

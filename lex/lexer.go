@@ -83,7 +83,7 @@ func (receiver Lexer) checkForMultiCharacterToken(character rune) (Token, error)
 		return Token{Type: WHITE_SPACE, Literal: literal}, err
 	} else if isNumeric(character) {
 		literal, err := receiver.scanUntilNot(isNumeric, character)
-		return Token{Type: NUMBER, Literal: literal}, err
+		return Token{Type: NUMERIC, Literal: literal}, err
 	} else if isAlpha(character) {
 		//if we start with an alpha, scan all the alpha-numeric stuff
 		literal, err := receiver.scanUntilNot(func(innerCharacter rune) bool {
@@ -100,7 +100,7 @@ func (receiver Lexer) checkForMultiCharacterToken(character rune) (Token, error)
 			return Token{Type: OR, Literal: literal}, err
 		}
 
-		return Token{Type: ALPHA_NUMERIC, Literal: literal}, err
+		return Token{Type: ALPHA, Literal: literal}, err
 	}
 
 	return Token{}, errors.New("no token found")
