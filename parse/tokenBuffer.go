@@ -2,6 +2,7 @@ package parse
 
 import (
 	"github.com/halprin/fhirpath/lex"
+	"io"
 )
 
 type TokenBuffer struct {
@@ -32,8 +33,32 @@ func (receiver *TokenBuffer) Push() {
 	receiver.bufferIndex--
 }
 
-func (receiver *TokenBuffer) PushToken(token lex.Token) {
-	//TODO: this won't work; we need a linked list or something because what if we insert when the bufferIndex points to the middle of the buffer?  We don't want to shift everything.
-	receiver.buffer = append(receiver.buffer, token)
-	receiver.bufferIndex--
+func (receiver *TokenBuffer) PushTimes(times int) {
+	receiver.bufferIndex -= times
+}
+
+func (receiver *TokenBuffer) PopUntilNot(tokenType int) ([]lex.Token, error) {
+	var accumulator []lex.Token
+	var token lex.Token
+	var err error
+
+	for {
+		token, err = receiver.Pop()
+		if err != nil {
+			receiver.Push()
+			break
+		} else if token.Type != tokenType {
+			receiver.Push()
+			break
+		}
+
+		accumulator = append(accumulator, token)
+	}
+
+	if err == io.EOF && len(accumulator) > 0 {
+		//we encountered the end, but we've read something means we have something valid; hide the error because it will be encountered in the next read
+		err = nil
+	}
+
+	return accumulator, err
 }

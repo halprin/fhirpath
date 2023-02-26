@@ -13,14 +13,13 @@ type Number struct {
 }
 
 func NewNumber(buffer parse.TokenBuffer) (Number, error) {
-	integerToken, err := buffer.Pop()
+	integerTokens, err := buffer.PopUntilNot(lex.NUMERIC)
 	if err != nil {
-		buffer.Push()
+		buffer.PushTimes(len(integerTokens))
 		return Number{}, err
 	}
 
-	if integerToken.Type != lex.NUMERIC {
-		buffer.Push()
+	if len(integerTokens) == 0 {
 		return Number{}, parse.NoGrammarParse
 	}
 
@@ -33,25 +32,24 @@ func NewNumber(buffer parse.TokenBuffer) (Number, error) {
 	if periodToken.Type != lex.PERIOD {
 		//we're done; the number is an integer, not a decimal
 		buffer.Push()
-		intValue, err := strconv.Atoi(integerToken.Literal)
+		intValue, err := strconv.Atoi(concatTokenLiterals(integerTokens))
 		if err != nil {
 			return Number{}, fmt.Errorf("tried to make an integer even though lexxer found a number: %w", err)
 		}
 		return Number{ValueInt: intValue}, nil
 	}
 
-	decimalToken, err := buffer.Pop()
+	decimalTokens, err := buffer.PopUntilNot(lex.NUMERIC)
 	if err != nil {
-		buffer.Push()
+		buffer.PushTimes(len(decimalTokens))
 		return Number{}, err
 	}
 
-	if decimalToken.Type != lex.NUMERIC {
-		buffer.Push()
+	if len(decimalTokens) == 0 {
 		return Number{}, parse.NoGrammarParse
 	}
 
-	floatValue, err := strconv.ParseFloat(integerToken.Literal+periodToken.Literal+decimalToken.Literal, 64)
+	floatValue, err := strconv.ParseFloat(concatTokenLiterals(integerTokens)+periodToken.Literal+concatTokenLiterals(decimalTokens), 64)
 	if err != nil {
 		return Number{}, fmt.Errorf("tried to make a float even though lexxer found a number: %w", err)
 	}
