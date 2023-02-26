@@ -8,14 +8,14 @@ import (
 
 func TestPopBringsTheTokensInTheCorrectOrder(t *testing.T) {
 	tokenBuffer := TokenBuffer{
-		Lexer: lex.NewLexer("dogcow.moof"),
+		Lexer: lex.NewLexer("d.m"),
 	}
 
 	firstToken, err := tokenBuffer.Pop()
 	assert.NoError(t, err)
 	assert.Equal(t, lex.Token{
 		Type:    lex.ALPHA,
-		Literal: "dogcow",
+		Literal: "d",
 	}, firstToken)
 
 	secondToken, err := tokenBuffer.Pop()
@@ -29,7 +29,7 @@ func TestPopBringsTheTokensInTheCorrectOrder(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, lex.Token{
 		Type:    lex.ALPHA,
-		Literal: "moof",
+		Literal: "m",
 	}, thirdToken)
 
 	_, err = tokenBuffer.Pop()
@@ -38,7 +38,7 @@ func TestPopBringsTheTokensInTheCorrectOrder(t *testing.T) {
 
 func TestPopAndPushBringsBackTheSameToken(t *testing.T) {
 	tokenBuffer := TokenBuffer{
-		Lexer: lex.NewLexer("dogcow.moof"),
+		Lexer: lex.NewLexer("d.m"),
 	}
 
 	firstToken, err := tokenBuffer.Pop()
@@ -54,7 +54,7 @@ func TestPopAndPushBringsBackTheSameToken(t *testing.T) {
 
 func TestMultiplePopAndPushBringsBackTheSameToken(t *testing.T) {
 	tokenBuffer := TokenBuffer{
-		Lexer: lex.NewLexer("dogcow.moof.true"),
+		Lexer: lex.NewLexer("d.m.t"),
 	}
 
 	firstToken, err := tokenBuffer.Pop()

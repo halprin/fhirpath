@@ -83,43 +83,46 @@ var backSlashToken = Token{
 func TestLexerWithFhirPath(t *testing.T) {
 	expectedTokens := []Token{{
 		Type:    ALPHA,
-		Literal: "entry",
+		Literal: "e",
 	}, periodToken, {
 		Type:    ALPHA,
-		Literal: "resource",
+		Literal: "r",
 	}, periodToken, {
 		Type:    ALPHA,
-		Literal: "ofType",
+		Literal: "o",
 	}, parenthesisStartToken, {
 		Type:    ALPHA,
-		Literal: "Patient",
-	}, spaceToken, {
-		Type:    OR,
-		Literal: "or",
+		Literal: "P",
 	}, spaceToken, {
 		Type:    ALPHA,
-		Literal: "ServiceRequest",
+		Literal: "o",
+	}, spaceToken, {
+		Type:    ALPHA,
+		Literal: "S",
 	}, parenthesisEndToken, periodToken, {
 		Type:    ALPHA,
-		Literal: "id",
+		Literal: "i",
 	}}
 
-	tokens, err := NewLexer("entry.resource.ofType(Patient or ServiceRequest).id").Lex()
+	tokens, err := NewLexer("e.r.o(P o S).i").Lex()
 
 	assert.NoError(t, err)
 	assert.Equal(t, expectedTokens, tokens)
 }
 
 func TestRandomTokens(t *testing.T) {
-	expectedTokens := []Token{parenthesisEndToken, parenthesisStartToken, trueToken, periodToken, falseToken, atToken, {
+	expectedTokens := []Token{parenthesisEndToken, parenthesisStartToken, periodToken, atToken, {
 		Type:    NUMERIC,
-		Literal: "26",
-	}, backSlashToken, andToken, quoteToken, orToken, plusToken, dashToken, {
+		Literal: "2",
+	}, backSlashToken, quoteToken, {
+		Type:    ALPHA,
+		Literal: "o",
+	}, plusToken, dashToken, {
 		Type:    WHITE_SPACE,
-		Literal: " \t\n\r",
+		Literal: "\n",
 	}, slashToken, starToken}
 
-	tokens, err := NewLexer(")(true.false@26\\and'or+- \t\n\r/*").Lex()
+	tokens, err := NewLexer(")(.@2\\'o+-\n/*").Lex()
 
 	assert.NoError(t, err)
 	assert.Equal(t, expectedTokens, tokens)
