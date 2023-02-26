@@ -49,7 +49,7 @@ func NewNumber(buffer parse.TokenBuffer) (Number, error) {
 		return Number{}, parse.NoGrammarParse
 	}
 
-	floatValue, err := strconv.ParseFloat(concatTokenLiterals(integerTokens)+periodToken.Literal+concatTokenLiterals(decimalTokens), 64)
+	floatValue, err := strconv.ParseFloat(concatTokenLiterals(integerTokens)+string(periodToken.Literal)+concatTokenLiterals(decimalTokens), 64)
 	if err != nil {
 		return Number{}, fmt.Errorf("tried to make a float even though lexxer found a number: %w", err)
 	}

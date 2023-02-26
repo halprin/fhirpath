@@ -9,7 +9,7 @@ func concatTokenLiterals(tokens []lex.Token) string {
 	var builder strings.Builder
 
 	for _, token := range tokens {
-		builder.WriteString(token.Literal)
+		builder.WriteRune(token.Literal)
 	}
 
 	return builder.String()

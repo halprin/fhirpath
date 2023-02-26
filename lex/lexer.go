@@ -47,25 +47,25 @@ func (receiver Lexer) NextToken() (Token, error) {
 
 	switch character {
 	case '.':
-		return Token{Type: PERIOD, Literal: string(character)}, nil
+		return Token{Type: PERIOD, Literal: character}, nil
 	case '(':
-		return Token{Type: PARENTHESIS_START, Literal: string(character)}, nil
+		return Token{Type: PARENTHESIS_START, Literal: character}, nil
 	case ')':
-		return Token{Type: PARENTHESIS_END, Literal: string(character)}, nil
+		return Token{Type: PARENTHESIS_END, Literal: character}, nil
 	case '@':
-		return Token{Type: AT_SIGN, Literal: string(character)}, nil
+		return Token{Type: AT_SIGN, Literal: character}, nil
 	case '\'':
-		return Token{Type: QUOTE, Literal: string(character)}, nil
+		return Token{Type: QUOTE, Literal: character}, nil
 	case '+':
-		return Token{Type: PLUS, Literal: string(character)}, nil
+		return Token{Type: PLUS, Literal: character}, nil
 	case '-':
-		return Token{Type: DASH, Literal: string(character)}, nil
+		return Token{Type: DASH, Literal: character}, nil
 	case '*':
-		return Token{Type: STAR, Literal: string(character)}, nil
+		return Token{Type: STAR, Literal: character}, nil
 	case '/':
-		return Token{Type: SLASH, Literal: string(character)}, nil
+		return Token{Type: SLASH, Literal: character}, nil
 	case '\\':
-		return Token{Type: BACK_SLASH, Literal: string(character)}, nil
+		return Token{Type: BACK_SLASH, Literal: character}, nil
 	default:
 		return receiver.checkForTokenClass(character)
 	}
@@ -78,11 +78,11 @@ func (receiver Lexer) read() (rune, error) {
 
 func (receiver Lexer) checkForTokenClass(character rune) (Token, error) {
 	if isWhitespace(character) {
-		return Token{Type: WHITE_SPACE, Literal: string(character)}, nil
+		return Token{Type: WHITE_SPACE, Literal: character}, nil
 	} else if isNumeric(character) {
-		return Token{Type: NUMERIC, Literal: string(character)}, nil
+		return Token{Type: NUMERIC, Literal: character}, nil
 	} else if isAlpha(character) {
-		return Token{Type: ALPHA, Literal: string(character)}, nil
+		return Token{Type: ALPHA, Literal: character}, nil
 	}
 
 	return Token{}, errors.New("no token found")

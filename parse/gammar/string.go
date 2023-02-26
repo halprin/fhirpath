@@ -44,7 +44,7 @@ func NewString(buffer parse.TokenBuffer) (String, error) {
 			continue
 		}
 
-		stringBuilder.WriteString(currentToken.Literal)
+		stringBuilder.WriteRune(currentToken.Literal)
 	}
 
 	return String{Value: stringBuilder.String()}, nil

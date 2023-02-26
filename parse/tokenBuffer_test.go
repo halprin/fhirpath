@@ -15,21 +15,21 @@ func TestPopBringsTheTokensInTheCorrectOrder(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, lex.Token{
 		Type:    lex.ALPHA,
-		Literal: "d",
+		Literal: 'd',
 	}, firstToken)
 
 	secondToken, err := tokenBuffer.Pop()
 	assert.NoError(t, err)
 	assert.Equal(t, lex.Token{
 		Type:    lex.PERIOD,
-		Literal: ".",
+		Literal: '.',
 	}, secondToken)
 
 	thirdToken, err := tokenBuffer.Pop()
 	assert.NoError(t, err)
 	assert.Equal(t, lex.Token{
 		Type:    lex.ALPHA,
-		Literal: "m",
+		Literal: 'm',
 	}, thirdToken)
 
 	_, err = tokenBuffer.Pop()

@@ -2,7 +2,7 @@ package lex
 
 type Token struct {
 	Type    int
-	Literal string
+	Literal rune
 }
 
 const (

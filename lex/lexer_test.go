@@ -7,81 +7,81 @@ import (
 
 var periodToken = Token{
 	Type:    PERIOD,
-	Literal: ".",
+	Literal: '.',
 }
 
 var spaceToken = Token{
 	Type:    WHITE_SPACE,
-	Literal: " ",
+	Literal: ' ',
 }
 
 var parenthesisStartToken = Token{
 	Type:    PARENTHESIS_START,
-	Literal: "(",
+	Literal: '(',
 }
 
 var parenthesisEndToken = Token{
 	Type:    PARENTHESIS_END,
-	Literal: ")",
+	Literal: ')',
 }
 
 var atToken = Token{
 	Type:    AT_SIGN,
-	Literal: "@",
+	Literal: '@',
 }
 
 var quoteToken = Token{
 	Type:    QUOTE,
-	Literal: "'",
+	Literal: '\'',
 }
 
 var plusToken = Token{
 	Type:    PLUS,
-	Literal: "+",
+	Literal: '+',
 }
 
 var dashToken = Token{
 	Type:    DASH,
-	Literal: "-",
+	Literal: '-',
 }
 
 var slashToken = Token{
 	Type:    SLASH,
-	Literal: "/",
+	Literal: '/',
 }
 
 var starToken = Token{
 	Type:    STAR,
-	Literal: "*",
+	Literal: '*',
 }
 
 var backSlashToken = Token{
 	Type:    BACK_SLASH,
-	Literal: "\\",
+	Literal: '\\',
 }
 
 func TestLexerWithFhirPath(t *testing.T) {
 	expectedTokens := []Token{{
 		Type:    ALPHA,
-		Literal: "e",
+		Literal: 'e',
 	}, periodToken, {
 		Type:    ALPHA,
-		Literal: "r",
+		Literal: 'r',
 	}, periodToken, {
 		Type:    ALPHA,
-		Literal: "o",
+		Literal: 'o',
 	}, parenthesisStartToken, {
 		Type:    ALPHA,
-		Literal: "P",
+		Literal: 'P',
 	}, spaceToken, {
 		Type:    ALPHA,
-		Literal: "o",
+		Literal: 'o',
 	}, spaceToken, {
 		Type:    ALPHA,
-		Literal: "S",
+		Literal: 'S',
 	}, parenthesisEndToken, periodToken, {
 		Type:    ALPHA,
-		Literal: "i",
+		Literal: 'i',
 	}}
 
 	tokens, err := NewLexer("e.r.o(P o S).i").Lex()
@@ -93,13 +93,13 @@ func TestLexerWithFhirPath(t *testing.T) {
 func TestRandomTokens(t *testing.T) {
 	expectedTokens := []Token{parenthesisEndToken, parenthesisStartToken, periodToken, atToken, {
 		Type:    NUMERIC,
-		Literal: "2",
+		Literal: '2',
 	}, backSlashToken, quoteToken, {
 		Type:    ALPHA,
-		Literal: "o",
+		Literal: 'o',
 	}, plusToken, dashToken, {
 		Type:    WHITE_SPACE,
-		Literal: "\n",
+		Literal: '\n',
 	}, slashToken, starToken}
 
 	tokens, err := NewLexer(")(.@2\\'o+-\n/*").Lex()
