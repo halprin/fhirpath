@@ -25,26 +25,6 @@ var parenthesisEndToken = Token{
 	Literal: ")",
 }
 
-var trueToken = Token{
-	Type:    TRUE,
-	Literal: "true",
-}
-
-var falseToken = Token{
-	Type:    FALSE,
-	Literal: "false",
-}
-
-var andToken = Token{
-	Type:    AND,
-	Literal: "and",
-}
-
-var orToken = Token{
-	Type:    OR,
-	Literal: "or",
-}
-
 var atToken = Token{
 	Type:    AT_SIGN,
 	Literal: "@",
