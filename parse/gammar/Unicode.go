@@ -1,10 +1,9 @@
 package gammar
 
 import (
-	"encoding/hex"
 	"github.com/halprin/fhirpath/lex"
 	"github.com/halprin/fhirpath/parse"
-	"unicode/utf8"
+	"strconv"
 )
 
 type Unicode struct {
@@ -48,17 +47,11 @@ func NewUnicode(buffer *parse.TokenBuffer) (Unicode, error) {
 	}
 
 	concatenatedHexDigits := string(hexDigit1.Digit) + string(hexDigit2.Digit) + string(hexDigit3.Digit) + string(hexDigit4.Digit)
-	hexBytes, err := hex.DecodeString(concatenatedHexDigits)
+	hexInteger, err := strconv.ParseInt(concatenatedHexDigits, 16, 32)
 	if err != nil {
 		buffer.PushTimes(5) //undo the u character and the first - fourth hex digit
 		return Unicode{}, parse.NoGrammarParse
 	}
 
-	hexRune, _ := utf8.DecodeLastRune(hexBytes)
-	if hexRune == utf8.RuneError {
-		buffer.PushTimes(5) //undo the u character and the first - fourth hex digit
-		return Unicode{}, parse.NoGrammarParse
-	}
-
-	return Unicode{Character: hexRune}, nil
+	return Unicode{Character: rune(hexInteger)}, nil
 }
