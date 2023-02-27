@@ -33,6 +33,7 @@ func NewString(buffer *parse.TokenBuffer) (String, error) {
 		currentToken, err = buffer.Pop()
 		if err != nil {
 			buffer.Push()
+			buffer.PushTimes(stringBuilder.Len())
 			return String{}, err
 		}
 

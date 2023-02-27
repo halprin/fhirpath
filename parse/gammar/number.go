@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/halprin/fhirpath/lex"
 	"github.com/halprin/fhirpath/parse"
+	"io"
 	"strconv"
 )
 
@@ -25,6 +26,10 @@ func NewNumber(buffer *parse.TokenBuffer) (Number, error) {
 
 	periodToken, err := buffer.Pop()
 	if err != nil {
+		if err == io.EOF {
+			//we're done; the number is an integer, not a decimal
+			return integerTokensToNumber(integerTokens)
+		}
 		buffer.Push()
 		return Number{}, err
 	}
@@ -32,11 +37,7 @@ func NewNumber(buffer *parse.TokenBuffer) (Number, error) {
 	if periodToken.Type != lex.PERIOD {
 		//we're done; the number is an integer, not a decimal
 		buffer.Push()
-		intValue, err := strconv.Atoi(concatTokenLiterals(integerTokens))
-		if err != nil {
-			return Number{}, fmt.Errorf("tried to make an integer even though lexxer found a number: %w", err)
-		}
-		return Number{ValueInt: intValue}, nil
+		return integerTokensToNumber(integerTokens)
 	}
 
 	decimalTokens, err := buffer.PopUntilNot(lex.NUMERIC)
@@ -61,4 +62,12 @@ func NewNumber(buffer *parse.TokenBuffer) (Number, error) {
 		return Number{}, fmt.Errorf("tried to make a float even though lexxer found a number: %w", err)
 	}
 	return Number{ValueFloat: floatValue}, nil
+}
+
+func integerTokensToNumber(integerTokens []lex.Token) (Number, error) {
+	intValue, err := strconv.Atoi(concatTokenLiterals(integerTokens))
+	if err != nil {
+		return Number{}, fmt.Errorf("tried to make an integer even though lexxer found a number: %w", err)
+	}
+	return Number{ValueInt: intValue}, nil
 }

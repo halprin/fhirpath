@@ -36,7 +36,18 @@ func TestNumberDoesntParseImmediatelyDueToNoNumber(t *testing.T) {
 	}, nextToken)
 }
 
-func TestNumberParsesInteger(t *testing.T) {
+func TestNumberParsesIntegerWithEof(t *testing.T) {
+	tokenBuffer := &parse.TokenBuffer{
+		Lexer: lex.NewLexer("26"),
+	}
+
+	number, err := NewNumber(tokenBuffer)
+	assert.NoError(t, err)
+
+	assert.Equal(t, 26, number.ValueInt)
+}
+
+func TestNumberParsesIntegerWithMoreTokens(t *testing.T) {
 	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("26abc"),
 	}
@@ -65,9 +76,27 @@ func TestNumberFailsParseAfterPeriod(t *testing.T) {
 	}, nextToken)
 }
 
+func TestNumberFailsParseAfterPeriodWithEof(t *testing.T) {
+	tokenBuffer := &parse.TokenBuffer{
+		Lexer: lex.NewLexer("26."),
+	}
+
+	_, err := NewNumber(tokenBuffer)
+
+	assert.ErrorIs(t, err, io.EOF)
+
+	nextToken, err := tokenBuffer.Pop()
+	assert.NoError(t, err)
+
+	assert.Equal(t, lex.Token{
+		Type:    lex.NUMERIC,
+		Literal: '2',
+	}, nextToken)
+}
+
 func TestNumberParsesFloat(t *testing.T) {
 	tokenBuffer := &parse.TokenBuffer{
-		Lexer: lex.NewLexer("26.32abc"),
+		Lexer: lex.NewLexer("26.32"),
 	}
 
 	number, err := NewNumber(tokenBuffer)

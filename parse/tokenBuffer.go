@@ -45,10 +45,9 @@ func (receiver *TokenBuffer) PopUntilNot(tokenType int) ([]lex.Token, error) {
 	for {
 		token, err = receiver.Pop()
 		if err != nil {
-			receiver.Push()
 			break
 		} else if token.Type != tokenType {
-			receiver.Push()
+			receiver.Push() //push that token back since it wasn't want we're looking for
 			break
 		}
 
