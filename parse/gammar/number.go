@@ -12,7 +12,7 @@ type Number struct {
 	ValueFloat float64
 }
 
-func NewNumber(buffer parse.TokenBuffer) (Number, error) {
+func NewNumber(buffer *parse.TokenBuffer) (Number, error) {
 	integerTokens, err := buffer.PopUntilNot(lex.NUMERIC)
 	if err != nil {
 		buffer.PushTimes(len(integerTokens))
@@ -42,15 +42,22 @@ func NewNumber(buffer parse.TokenBuffer) (Number, error) {
 	decimalTokens, err := buffer.PopUntilNot(lex.NUMERIC)
 	if err != nil {
 		buffer.PushTimes(len(decimalTokens))
+		buffer.Push()
+		buffer.PushTimes(len(integerTokens))
 		return Number{}, err
 	}
 
 	if len(decimalTokens) == 0 {
+		buffer.Push()
+		buffer.PushTimes(len(integerTokens))
 		return Number{}, parse.NoGrammarParse
 	}
 
 	floatValue, err := strconv.ParseFloat(concatTokenLiterals(integerTokens)+string(periodToken.Literal)+concatTokenLiterals(decimalTokens), 64)
 	if err != nil {
+		buffer.PushTimes(len(decimalTokens))
+		buffer.Push()
+		buffer.PushTimes(len(integerTokens))
 		return Number{}, fmt.Errorf("tried to make a float even though lexxer found a number: %w", err)
 	}
 	return Number{ValueFloat: floatValue}, nil
