@@ -9,7 +9,7 @@ import (
 )
 
 func TestHexDigitDoesntParseImmediatelyDueToEof(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer(""),
 	}
 
@@ -19,7 +19,7 @@ func TestHexDigitDoesntParseImmediatelyDueToEof(t *testing.T) {
 }
 
 func TestHexDigitDoesntParseImmediatelyDueToNoNumericOrAlpha(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("+"),
 	}
 
@@ -29,7 +29,7 @@ func TestHexDigitDoesntParseImmediatelyDueToNoNumericOrAlpha(t *testing.T) {
 }
 
 func TestHexDigitDoesntParseImmediatelyDueToBadLowercaseAlpha(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("g"),
 	}
 
@@ -39,7 +39,7 @@ func TestHexDigitDoesntParseImmediatelyDueToBadLowercaseAlpha(t *testing.T) {
 }
 
 func TestHexDigitDoesntParseImmediatelyDueToBadUppercaseAlpha(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("G"),
 	}
 
@@ -49,7 +49,7 @@ func TestHexDigitDoesntParseImmediatelyDueToBadUppercaseAlpha(t *testing.T) {
 }
 
 func TestHexDigitParsesWithNumber(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("2"),
 	}
 
@@ -60,7 +60,7 @@ func TestHexDigitParsesWithNumber(t *testing.T) {
 }
 
 func TestHexDigitParsesWithLowercaseAlpha(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("f"),
 	}
 
@@ -71,7 +71,7 @@ func TestHexDigitParsesWithLowercaseAlpha(t *testing.T) {
 }
 
 func TestHexDigitParsesWithUppercaseAlpha(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("F"),
 	}
 

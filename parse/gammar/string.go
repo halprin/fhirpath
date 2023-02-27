@@ -10,7 +10,7 @@ type String struct {
 	Value string
 }
 
-func NewString(buffer parse.TokenBuffer) (String, error) {
+func NewString(buffer *parse.TokenBuffer) (String, error) {
 	startQuoteToken, err := buffer.Pop()
 	if err != nil {
 		buffer.Push()

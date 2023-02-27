@@ -9,7 +9,7 @@ type HexDigit struct {
 	Digit rune
 }
 
-func NewHexDigit(buffer parse.TokenBuffer) (HexDigit, error) {
+func NewHexDigit(buffer *parse.TokenBuffer) (HexDigit, error) {
 	token, err := buffer.Pop()
 	if err != nil {
 		buffer.Push()

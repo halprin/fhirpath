@@ -8,7 +8,7 @@ import (
 )
 
 func TestStringWorks(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("'keep a true statement or no +'and"),
 	}
 
@@ -19,7 +19,7 @@ func TestStringWorks(t *testing.T) {
 }
 
 func TestStringEmpty(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("''and"),
 	}
 
@@ -30,7 +30,7 @@ func TestStringEmpty(t *testing.T) {
 }
 
 func TestStringWithQuoteInIt(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("'I like \\' in my strings'"),
 	}
 
@@ -42,7 +42,7 @@ func TestStringWithQuoteInIt(t *testing.T) {
 
 //TODO: support needs to be added for escapes
 //func TestStringWithATabEscape(t *testing.T) {
-//	tokenBuffer := parse.TokenBuffer{
+//	tokenBuffer := &parse.TokenBuffer{
 //		Lexer: lex.NewLexer("'we have a \\tab in it'"),
 //	}
 //
