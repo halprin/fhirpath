@@ -47,7 +47,7 @@ func TestStringFailsWithUnfinishedString(t *testing.T) {
 	}
 
 	_, err := NewString(tokenBuffer)
-	assert.Equal(t, io.EOF, err)
+	assert.ErrorIs(t, err, io.EOF)
 
 	nextToken, err := tokenBuffer.Pop()
 	assert.NoError(t, err)
@@ -64,7 +64,7 @@ func TestStringIsNotAString(t *testing.T) {
 	}
 
 	_, err := NewString(tokenBuffer)
-	assert.Equal(t, parse.NoGrammarParse, err)
+	assert.ErrorIs(t, err, parse.NoGrammarParse)
 
 	nextToken, err := tokenBuffer.Pop()
 	assert.NoError(t, err)

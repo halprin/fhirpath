@@ -30,7 +30,7 @@ func (receiver *TokenBuffer) Pop() (lex.Token, error) {
 }
 
 func (receiver *TokenBuffer) Push() {
-	receiver.bufferIndex--
+	receiver.PushTimes(1)
 }
 
 func (receiver *TokenBuffer) PushTimes(times int) {

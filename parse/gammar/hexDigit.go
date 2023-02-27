@@ -12,7 +12,6 @@ type HexDigit struct {
 func NewHexDigit(buffer *parse.TokenBuffer) (HexDigit, error) {
 	token, err := buffer.Pop()
 	if err != nil {
-		buffer.Push()
 		return HexDigit{}, err
 	}
 
