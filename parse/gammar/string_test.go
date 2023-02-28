@@ -4,11 +4,12 @@ import (
 	"github.com/halprin/fhirpath/lex"
 	"github.com/halprin/fhirpath/parse"
 	"github.com/stretchr/testify/assert"
+	"io"
 	"testing"
 )
 
 func TestStringWorks(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("'keep a true statement or no +'and"),
 	}
 
@@ -19,7 +20,7 @@ func TestStringWorks(t *testing.T) {
 }
 
 func TestStringEmpty(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("''and"),
 	}
 
@@ -30,7 +31,7 @@ func TestStringEmpty(t *testing.T) {
 }
 
 func TestStringWithQuoteInIt(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("'I like \\' in my strings'"),
 	}
 
@@ -40,9 +41,43 @@ func TestStringWithQuoteInIt(t *testing.T) {
 	assert.Equal(t, "I like ' in my strings", stringGrammar.Value)
 }
 
+func TestStringFailsWithUnfinishedString(t *testing.T) {
+	tokenBuffer := &parse.TokenBuffer{
+		Lexer: lex.NewLexer("'beginning quote but no ending one"),
+	}
+
+	_, err := NewString(tokenBuffer)
+	assert.ErrorIs(t, err, io.EOF)
+
+	nextToken, err := tokenBuffer.Pop()
+	assert.NoError(t, err)
+
+	assert.Equal(t, lex.Token{
+		Type:    lex.QUOTE,
+		Literal: '\'',
+	}, nextToken)
+}
+
+func TestStringIsNotAString(t *testing.T) {
+	tokenBuffer := &parse.TokenBuffer{
+		Lexer: lex.NewLexer("26.45"),
+	}
+
+	_, err := NewString(tokenBuffer)
+	assert.ErrorIs(t, err, parse.NoGrammarParse)
+
+	nextToken, err := tokenBuffer.Pop()
+	assert.NoError(t, err)
+
+	assert.Equal(t, lex.Token{
+		Type:    lex.NUMERIC,
+		Literal: '2',
+	}, nextToken)
+}
+
 //TODO: support needs to be added for escapes
 //func TestStringWithATabEscape(t *testing.T) {
-//	tokenBuffer := parse.TokenBuffer{
+//	tokenBuffer := &parse.TokenBuffer{
 //		Lexer: lex.NewLexer("'we have a \\tab in it'"),
 //	}
 //

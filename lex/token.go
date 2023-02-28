@@ -2,25 +2,19 @@ package lex
 
 type Token struct {
 	Type    int
-	Literal string
+	Literal rune
 }
 
 const (
 	PERIOD int = iota
 
-	ALPHA_NUMERIC
-	NUMBER
+	ALPHA
+	NUMERIC
 
 	WHITE_SPACE
 
-	TRUE
-	FALSE
-
 	PARENTHESIS_START
 	PARENTHESIS_END
-
-	AND
-	OR
 
 	AT_SIGN
 

@@ -9,7 +9,7 @@ import (
 )
 
 func TestNumberDoesntParseImmediatelyDueToEof(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer(""),
 	}
 
@@ -19,17 +19,36 @@ func TestNumberDoesntParseImmediatelyDueToEof(t *testing.T) {
 }
 
 func TestNumberDoesntParseImmediatelyDueToNoNumber(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("dogcow.moof"),
 	}
 
 	_, err := NewNumber(tokenBuffer)
 
 	assert.ErrorIs(t, err, parse.NoGrammarParse)
+
+	nextToken, err := tokenBuffer.Pop()
+	assert.NoError(t, err)
+
+	assert.Equal(t, lex.Token{
+		Type:    lex.ALPHA,
+		Literal: 'd',
+	}, nextToken)
 }
 
-func TestNumberParsesInteger(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+func TestNumberParsesIntegerWithEof(t *testing.T) {
+	tokenBuffer := &parse.TokenBuffer{
+		Lexer: lex.NewLexer("26"),
+	}
+
+	number, err := NewNumber(tokenBuffer)
+	assert.NoError(t, err)
+
+	assert.Equal(t, 26, number.ValueInt)
+}
+
+func TestNumberParsesIntegerWithMoreTokens(t *testing.T) {
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("26abc"),
 	}
 
@@ -40,18 +59,44 @@ func TestNumberParsesInteger(t *testing.T) {
 }
 
 func TestNumberFailsParseAfterPeriod(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
+	tokenBuffer := &parse.TokenBuffer{
 		Lexer: lex.NewLexer("26.abc"),
 	}
 
 	_, err := NewNumber(tokenBuffer)
 
 	assert.ErrorIs(t, err, parse.NoGrammarParse)
+
+	nextToken, err := tokenBuffer.Pop()
+	assert.NoError(t, err)
+
+	assert.Equal(t, lex.Token{
+		Type:    lex.NUMERIC,
+		Literal: '2',
+	}, nextToken)
+}
+
+func TestNumberFailsParseAfterPeriodWithEof(t *testing.T) {
+	tokenBuffer := &parse.TokenBuffer{
+		Lexer: lex.NewLexer("26."),
+	}
+
+	_, err := NewNumber(tokenBuffer)
+
+	assert.ErrorIs(t, err, io.EOF)
+
+	nextToken, err := tokenBuffer.Pop()
+	assert.NoError(t, err)
+
+	assert.Equal(t, lex.Token{
+		Type:    lex.NUMERIC,
+		Literal: '2',
+	}, nextToken)
 }
 
 func TestNumberParsesFloat(t *testing.T) {
-	tokenBuffer := parse.TokenBuffer{
-		Lexer: lex.NewLexer("26.32abc"),
+	tokenBuffer := &parse.TokenBuffer{
+		Lexer: lex.NewLexer("26.32"),
 	}
 
 	number, err := NewNumber(tokenBuffer)

@@ -10,7 +10,7 @@ type String struct {
 	Value string
 }
 
-func NewString(buffer parse.TokenBuffer) (String, error) {
+func NewString(buffer *parse.TokenBuffer) (String, error) {
 	startQuoteToken, err := buffer.Pop()
 	if err != nil {
 		buffer.Push()
@@ -33,6 +33,7 @@ func NewString(buffer parse.TokenBuffer) (String, error) {
 		currentToken, err = buffer.Pop()
 		if err != nil {
 			buffer.Push()
+			buffer.PushTimes(stringBuilder.Len())
 			return String{}, err
 		}
 
@@ -44,7 +45,7 @@ func NewString(buffer parse.TokenBuffer) (String, error) {
 			continue
 		}
 
-		stringBuilder.WriteString(currentToken.Literal)
+		stringBuilder.WriteRune(currentToken.Literal)
 	}
 
 	return String{Value: stringBuilder.String()}, nil

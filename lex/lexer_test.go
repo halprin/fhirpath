@@ -7,119 +7,102 @@ import (
 
 var periodToken = Token{
 	Type:    PERIOD,
-	Literal: ".",
+	Literal: '.',
 }
 
 var spaceToken = Token{
 	Type:    WHITE_SPACE,
-	Literal: " ",
+	Literal: ' ',
 }
 
 var parenthesisStartToken = Token{
 	Type:    PARENTHESIS_START,
-	Literal: "(",
+	Literal: '(',
 }
 
 var parenthesisEndToken = Token{
 	Type:    PARENTHESIS_END,
-	Literal: ")",
-}
-
-var trueToken = Token{
-	Type:    TRUE,
-	Literal: "true",
-}
-
-var falseToken = Token{
-	Type:    FALSE,
-	Literal: "false",
-}
-
-var andToken = Token{
-	Type:    AND,
-	Literal: "and",
-}
-
-var orToken = Token{
-	Type:    OR,
-	Literal: "or",
+	Literal: ')',
 }
 
 var atToken = Token{
 	Type:    AT_SIGN,
-	Literal: "@",
+	Literal: '@',
 }
 
 var quoteToken = Token{
 	Type:    QUOTE,
-	Literal: "'",
+	Literal: '\'',
 }
 
 var plusToken = Token{
 	Type:    PLUS,
-	Literal: "+",
+	Literal: '+',
 }
 
 var dashToken = Token{
 	Type:    DASH,
-	Literal: "-",
+	Literal: '-',
 }
 
 var slashToken = Token{
 	Type:    SLASH,
-	Literal: "/",
+	Literal: '/',
 }
 
 var starToken = Token{
 	Type:    STAR,
-	Literal: "*",
+	Literal: '*',
 }
 
 var backSlashToken = Token{
 	Type:    BACK_SLASH,
-	Literal: "\\",
+	Literal: '\\',
 }
 
 func TestLexerWithFhirPath(t *testing.T) {
 	expectedTokens := []Token{{
-		Type:    ALPHA_NUMERIC,
-		Literal: "entry",
+		Type:    ALPHA,
+		Literal: 'e',
 	}, periodToken, {
-		Type:    ALPHA_NUMERIC,
-		Literal: "resource",
+		Type:    ALPHA,
+		Literal: 'r',
 	}, periodToken, {
-		Type:    ALPHA_NUMERIC,
-		Literal: "ofType",
+		Type:    ALPHA,
+		Literal: 'o',
 	}, parenthesisStartToken, {
-		Type:    ALPHA_NUMERIC,
-		Literal: "Patient",
+		Type:    ALPHA,
+		Literal: 'P',
 	}, spaceToken, {
-		Type:    OR,
-		Literal: "or",
+		Type:    ALPHA,
+		Literal: 'o',
 	}, spaceToken, {
-		Type:    ALPHA_NUMERIC,
-		Literal: "ServiceRequest",
+		Type:    ALPHA,
+		Literal: 'S',
 	}, parenthesisEndToken, periodToken, {
-		Type:    ALPHA_NUMERIC,
-		Literal: "id",
+		Type:    ALPHA,
+		Literal: 'i',
 	}}
 
-	tokens, err := NewLexer("entry.resource.ofType(Patient or ServiceRequest).id").Lex()
+	tokens, err := NewLexer("e.r.o(P o S).i").Lex()
 
 	assert.NoError(t, err)
 	assert.Equal(t, expectedTokens, tokens)
 }
 
 func TestRandomTokens(t *testing.T) {
-	expectedTokens := []Token{parenthesisEndToken, parenthesisStartToken, trueToken, periodToken, falseToken, atToken, {
-		Type:    NUMBER,
-		Literal: "26",
-	}, backSlashToken, andToken, quoteToken, orToken, plusToken, dashToken, {
+	expectedTokens := []Token{parenthesisEndToken, parenthesisStartToken, periodToken, atToken, {
+		Type:    NUMERIC,
+		Literal: '2',
+	}, backSlashToken, quoteToken, {
+		Type:    ALPHA,
+		Literal: 'o',
+	}, plusToken, dashToken, {
 		Type:    WHITE_SPACE,
-		Literal: " \t\n\r",
+		Literal: '\n',
 	}, slashToken, starToken}
 
-	tokens, err := NewLexer(")(true.false@26\\and'or+- \t\n\r/*").Lex()
+	tokens, err := NewLexer(")(.@2\\'o+-\n/*").Lex()
 
 	assert.NoError(t, err)
 	assert.Equal(t, expectedTokens, tokens)
