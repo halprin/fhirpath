@@ -26,4 +26,5 @@ const (
 	SLASH
 
 	BACK_SLASH
+	BACK_TICK
 )

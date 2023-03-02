@@ -13,7 +13,6 @@ type Unicode struct {
 func NewUnicode(buffer *parse.TokenBuffer) (Unicode, error) {
 	uCharacter, err := buffer.Pop()
 	if err != nil {
-		buffer.Push()
 		return Unicode{}, err
 	}
 

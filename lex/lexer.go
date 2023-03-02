@@ -66,6 +66,8 @@ func (receiver Lexer) NextToken() (Token, error) {
 		return Token{Type: SLASH, Literal: character}, nil
 	case '\\':
 		return Token{Type: BACK_SLASH, Literal: character}, nil
+	case '`':
+		return Token{Type: BACK_TICK, Literal: character}, nil
 	default:
 		return receiver.checkForTokenClass(character)
 	}
