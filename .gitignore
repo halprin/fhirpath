@@ -13,3 +13,9 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Antlr generation ignore
+/antlrgen/*.interp
+/antlrgen/*.tokens
+/antlrgen/*.go
+!/antlrgen/generate.go
