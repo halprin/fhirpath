@@ -1,22 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"github.com/antlr4-go/antlr/v4"
 	"github.com/halprin/fhirpath/grammar"
+	"github.com/halprin/fhirpath/listener"
 )
-
-type TreeShapeListener struct {
-	*grammar.BaseFhirpathListener
-}
-
-func NewTreeShapeListener() *TreeShapeListener {
-	return new(TreeShapeListener)
-}
-
-func (listener *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
-	fmt.Println(ctx.GetText())
-}
 
 func main() {
 	input := antlr.NewInputStream("Bundle.stuff")
@@ -26,5 +14,5 @@ func main() {
 	parser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 	parser.BuildParseTrees = true
 	tree := parser.Expression()
-	antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
+	antlr.ParseTreeWalkerDefault.Walk(listener.NewFhirPathListener(), tree)
 }
