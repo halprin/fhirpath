@@ -1,4 +1,4 @@
-grammar fhirpath;
+grammar Fhirpath;
 
 // Grammar rules
 // [FHIRPath](http://hl7.org/fhirpath/N1) Normative Release
