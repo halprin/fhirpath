@@ -15,7 +15,7 @@
 # vendor/
 
 # Antlr generation ignore
-/antlrgen/*.interp
-/antlrgen/*.tokens
-/antlrgen/*.go
-!/antlrgen/generate.go
+/grammar/*.interp
+/grammar/*.tokens
+/grammar/*.go
+!/grammar/generate.go

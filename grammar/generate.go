@@ -1,3 +1,3 @@
-package antlrgen
+package grammar
 
 //go:generate ./generate.sh

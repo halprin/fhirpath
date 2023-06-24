@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/antlr4-go/antlr/v4"
-	"github.com/halprin/fhirpath/antlrgen"
+	"github.com/halprin/fhirpath/grammar"
 )
 
 type TreeShapeListener struct {
-	*antlrgen.BaseFhirpathListener
+	*grammar.BaseFhirpathListener
 }
 
 func NewTreeShapeListener() *TreeShapeListener {
@@ -20,9 +20,9 @@ func (listener *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
 
 func main() {
 	input := antlr.NewInputStream("Bundle.stuff")
-	lexer := antlrgen.NewFhirpathLexer(input)
+	lexer := grammar.NewFhirpathLexer(input)
 	stream := antlr.NewCommonTokenStream(lexer, 0)
-	parser := antlrgen.NewFhirpathParser(stream)
+	parser := grammar.NewFhirpathParser(stream)
 	parser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 	parser.BuildParseTrees = true
 	tree := parser.Expression()
