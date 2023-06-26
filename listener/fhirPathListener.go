@@ -15,5 +15,9 @@ func NewFhirPathListener() *FhirPathListener {
 }
 
 func (listener *FhirPathListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
-	fmt.Println(ctx.GetText())
+	fmt.Printf("EnterEveryRule: %d=%s\n", ctx.GetRuleIndex(), ctx.GetText())
+}
+
+func (listener *FhirPathListener) VisitTerminal(node antlr.TerminalNode) {
+	fmt.Printf("VisitTerminal: %s\n", node.GetText())
 }
