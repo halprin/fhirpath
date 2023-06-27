@@ -7,11 +7,11 @@ import (
 )
 
 func main() {
-	input := antlr.NewInputStream("Patient.name.where(use='usual' or use='official').given.first()")
+	input := antlr.NewInputStream("name.where(use='usual' or use='official').given.first()")
 	lexer := grammar.NewFhirpathLexer(input)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	parser := grammar.NewFhirpathParser(stream)
 	parser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 	tree := parser.Expression()
-	antlr.ParseTreeWalkerDefault.Walk(listener.NewFhirPathListener(), tree)
+	antlr.ParseTreeWalkerDefault.Walk(listener.NewFhirPathListener(parser), tree)
 }

@@ -8,16 +8,19 @@ import (
 
 type FhirPathListener struct {
 	*grammar.BaseFhirpathListener
+
+	parser *grammar.FhirpathParser
 }
 
-func NewFhirPathListener() *FhirPathListener {
-	return new(FhirPathListener)
+func NewFhirPathListener(parser *grammar.FhirpathParser) *FhirPathListener {
+	return &FhirPathListener{parser: parser}
 }
 
 func (listener *FhirPathListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
-	fmt.Printf("EnterEveryRule: %d=%s\n", ctx.GetRuleIndex(), ctx.GetText())
+	fmt.Printf("EnterEveryRule: %s: %s\n", listener.parser.GetRuleNames()[ctx.GetRuleIndex()], ctx.GetText())
+	ctx.GetPayload()
 }
 
 func (listener *FhirPathListener) VisitTerminal(node antlr.TerminalNode) {
-	fmt.Printf("VisitTerminal: %s\n", node.GetText())
+//	fmt.Printf("VisitTerminal: %s, %s\n", node.GetText(), node.ToStringTree(nil, nil))
 }
