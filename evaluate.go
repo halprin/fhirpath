@@ -5,14 +5,14 @@ import (
 	"github.com/halprin/fhirpath/grammar"
 )
 
-func Evaluate(fhirString string, fhirPath string) ([]interface{}, error) {
+func Evaluate[T any](fhirString string, fhirPath string) ([]T, error) {
 	
 	fhir, err := unmarshalFhir(fhirString)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := grammar.AntlrExecute(fhir, fhirPath)
+	result, err := grammar.AntlrExecute[T](fhir, fhirPath)
 	if err != nil {
 		return nil, err
 	}
