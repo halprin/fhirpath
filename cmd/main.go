@@ -3,8 +3,8 @@ package main
 import (
 	_ "embed"
 	"github.com/antlr4-go/antlr/v4"
+	"github.com/halprin/fhirpath/engine"
 	"github.com/halprin/fhirpath/grammar"
-	"github.com/halprin/fhirpath/listener"
 )
 
 func main() {
@@ -14,5 +14,5 @@ func main() {
 	parser := grammar.NewFhirpathParser(stream)
 	parser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 	tree := parser.Expression()
-	antlr.ParseTreeWalkerDefault.Walk(listener.NewFhirPathListener("patientFhir", parser), tree)
+	antlr.ParseTreeWalkerDefault.Walk(engine.NewFhirPathEngine("patientFhir", parser), tree)
 }

@@ -2,16 +2,22 @@ package fhirpath
 
 import (
 	"encoding/json"
+	"github.com/halprin/fhirpath/grammar"
 )
 
-func Evaluate(fhir string, fhirPath string) ([]string, error) {
+func Evaluate(fhirString string, fhirPath string) ([]interface{}, error) {
 	
-	_, err := unmarshalFhir(fhir)
+	fhir, err := unmarshalFhir(fhirString)
 	if err != nil {
 		return nil, err
 	}
-	
-	return []string{""}, nil
+
+	result, err := grammar.AntlrExecute(fhir, fhirPath)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func unmarshalFhir(fhir string) (map[string]interface{}, error) {
