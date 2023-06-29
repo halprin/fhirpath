@@ -10,10 +10,14 @@ type FhirPathListener struct {
 	*grammar.BaseFhirpathListener
 
 	parser *grammar.FhirpathParser
+	fhir   string
 }
 
-func NewFhirPathListener(parser *grammar.FhirpathParser) *FhirPathListener {
-	return &FhirPathListener{parser: parser}
+func NewFhirPathListener(fhir string, parser *grammar.FhirpathParser) *FhirPathListener {
+	return &FhirPathListener{
+		parser: parser,
+		fhir: fhir,
+	}
 }
 
 func (listener *FhirPathListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
