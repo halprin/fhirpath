@@ -17,5 +17,4 @@
 # Antlr generation ignore
 /grammar/*.interp
 /grammar/*.tokens
-/grammar/*.go
-!/grammar/generate.go
+/grammar/fhirpath_*.go
