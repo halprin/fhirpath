@@ -3,6 +3,7 @@ package grammar
 import (
 	"fmt"
 	"github.com/antlr4-go/antlr/v4"
+	"reflect"
 )
 
 type FhirPathEngine[T any] struct {
@@ -27,6 +28,13 @@ func (engine *FhirPathEngine[T]) Result() ([]T, error) {
 
 func (engine *FhirPathEngine[T]) EnterEveryRule(ctx antlr.ParserRuleContext) {
 	fmt.Printf("EnterEveryRule: %s: %s\n", engine.parser.GetRuleNames()[ctx.GetRuleIndex()], ctx.GetText())
+	fmt.Printf("alt=%d\n", ctx.GetAltNumber())
+	fmt.Printf("type=%s\n", reflect.TypeOf(ctx))
+}
+
+func (engine *FhirPathEngine[T]) EnterMemberInvocation(ctx *MemberInvocationContext) {
+	fmt.Printf("EnterMemberInvocation: %s: %s\n", engine.parser.GetRuleNames()[ctx.GetRuleIndex()], ctx.GetText())
+	fmt.Printf("alt=%d\n", ctx.GetAltNumber())
 }
 
 func (engine *FhirPathEngine[T]) VisitTerminal(node antlr.TerminalNode) {

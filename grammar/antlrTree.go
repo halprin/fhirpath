@@ -1,6 +1,10 @@
 package grammar
 
-import "github.com/antlr4-go/antlr/v4"
+import (
+	"fmt"
+	"github.com/antlr4-go/antlr/v4"
+	"reflect"
+)
 
 type AntlrTree struct {
 	text     string
@@ -18,12 +22,13 @@ func newAntlrTreeWithParent(antlrTree antlr.RuleContext, parser *FhirpathParser,
 
 	tree.text = antlrTree.GetText()
 	tree.rule = parser.GetRuleNames()[antlrTree.GetRuleIndex()]
+	tree.rule = reflect.TypeOf(antlrTree).String()
 	tree.parent = parent
 
 	children := make([]Tree, 0, antlrTree.GetChildCount())
 
 	for _, currentChild := range antlrTree.GetChildren() {
-		payload, ok := currentChild.GetPayload().(antlr.RuleContext)
+		payload, ok := currentChild.(antlr.RuleContext)
 
 		if !ok {
 			continue
