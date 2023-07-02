@@ -1,6 +1,7 @@
 package grammar
 
 import (
+	"fmt"
 	"github.com/antlr4-go/antlr/v4"
 )
 
@@ -14,6 +15,9 @@ func AntlrExecute[T any](fhir map[string]interface{}, fhirPath string) ([]T, err
 	parser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 	tree := parser.Expression()
 	
+	antlrTree := NewAntlrTree(tree, parser)
+	fmt.Println(antlrTree.Rule())
+
 	fhirEngine := NewFhirPathEngine[T](fhir, parser)
 	
 	antlr.ParseTreeWalkerDefault.Walk(fhirEngine, tree)

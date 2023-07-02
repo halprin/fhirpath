@@ -10,8 +10,8 @@ import (
 var fhirPatient string
 
 func TestEvaluate(t *testing.T) {
-	_, err := Evaluate[string](fhirPatient, "Patient.gender")
+	result, err := Evaluate[string](fhirPatient, "Patient.gender")
 	
 	assert.NoError(t, err)
-//	assert.Contains(t, result, "male")
+	assert.Contains(t, result, "male")
 }

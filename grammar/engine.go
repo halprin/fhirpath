@@ -8,14 +8,16 @@ import (
 type FhirPathEngine[T any] struct {
 	*BaseFhirpathListener
 
-	parser *FhirpathParser
-	fhir   map[string]interface{}
+	parser         *FhirpathParser
+	fhir           map[string]interface{}
+	currentContext map[string]interface{}
 }
 
 func NewFhirPathEngine[T any](fhir map[string]interface{}, parser *FhirpathParser) *FhirPathEngine[T] {
 	return &FhirPathEngine[T]{
 		parser: parser,
 		fhir:   fhir,
+		currentContext: fhir,
 	}
 }
 
@@ -28,5 +30,5 @@ func (engine *FhirPathEngine[T]) EnterEveryRule(ctx antlr.ParserRuleContext) {
 }
 
 func (engine *FhirPathEngine[T]) VisitTerminal(node antlr.TerminalNode) {
-//	fmt.Printf("VisitTerminal: %s, %s\n", node.GetText(), node.ToStringTree(nil, nil))
+	fmt.Printf("VisitTerminal: %s\n", node.GetText())
 }
