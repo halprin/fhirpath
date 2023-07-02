@@ -1,7 +1,6 @@
 package grammar
 
 import (
-	"fmt"
 	"github.com/antlr4-go/antlr/v4"
 	"reflect"
 )
@@ -33,7 +32,7 @@ func newAntlrTreeWithParent(antlrTree antlr.RuleContext, parent *AntlrTree) *Ant
 			continue
 		}
 
-		child := newAntlrTreeWithParent(payload, parser, tree)
+		child := newAntlrTreeWithParent(payload, tree)
 
 		children = append(children, child)
 	}
