@@ -13,15 +13,14 @@ type AntlrTree struct {
 	children []Tree
 }
 
-func NewAntlrTree(antlrTree antlr.RuleContext, parser *FhirpathParser) *AntlrTree {
-	return newAntlrTreeWithParent(antlrTree, parser, nil)
+func NewAntlrTree(antlrTree antlr.RuleContext) *AntlrTree {
+	return newAntlrTreeWithParent(antlrTree, nil)
 }
 
-func newAntlrTreeWithParent(antlrTree antlr.RuleContext, parser *FhirpathParser, parent *AntlrTree) *AntlrTree {
+func newAntlrTreeWithParent(antlrTree antlr.RuleContext, parent *AntlrTree) *AntlrTree {
 	tree := &AntlrTree{}
 
 	tree.text = antlrTree.GetText()
-	tree.rule = parser.GetRuleNames()[antlrTree.GetRuleIndex()]
 	tree.rule = reflect.TypeOf(antlrTree).String()
 	tree.parent = parent
 

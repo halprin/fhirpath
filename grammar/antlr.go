@@ -15,7 +15,7 @@ func AntlrExecute[T any](fhir map[string]interface{}, fhirPath string) ([]T, err
 	parser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 	tree := parser.Expression()
 
-	antlrTree := NewAntlrTree(tree, parser)
+	antlrTree := NewAntlrTree(tree)
 	fmt.Println(antlrTree.Rule())
 
 	fhirEngine := NewFhirPathEngine[T](fhir, parser)
