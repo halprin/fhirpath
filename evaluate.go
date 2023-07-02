@@ -2,6 +2,7 @@ package fhirpath
 
 import (
 	"encoding/json"
+	"github.com/halprin/fhirpath/engine"
 	"github.com/halprin/fhirpath/grammar"
 )
 
@@ -12,7 +13,12 @@ func Evaluate[T any](fhirString string, fhirPath string) ([]T, error) {
 		return nil, err
 	}
 
-	result, err := grammar.AntlrExecute[T](fhir, fhirPath)
+	tree, err := grammar.CreateTree(fhirPath)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := engine.Execute[T](fhir, tree)
 	if err != nil {
 		return nil, err
 	}
