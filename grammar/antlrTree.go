@@ -2,7 +2,9 @@ package grammar
 
 import (
 	"github.com/antlr4-go/antlr/v4"
+	"github.com/halprin/fhirpath/grammar/antlrGen"
 	"reflect"
+	"strings"
 )
 
 type AntlrTree struct {
@@ -20,7 +22,7 @@ func newAntlrTreeWithParent(antlrTree antlr.RuleContext, parent *AntlrTree) *Ant
 	tree := &AntlrTree{}
 
 	tree.text = antlrTree.GetText()
-	tree.rule = reflect.TypeOf(antlrTree).String()
+	tree.rule = trimmedAntlrType(reflect.TypeOf(antlrTree).String())
 	tree.parent = parent
 
 	children := make([]Tree, 0, antlrTree.GetChildCount())
@@ -40,6 +42,19 @@ func newAntlrTreeWithParent(antlrTree antlr.RuleContext, parent *AntlrTree) *Ant
 	tree.children = children
 
 	return tree
+}
+
+func trimmedAntlrType(antlrType string) string {
+
+	//get the package name used by the generated ANTLR code at run time
+	antlrGenPackagePath := reflect.TypeOf(antlrGen.FhirpathParser{}).PkgPath()
+	packageParts := strings.Split(antlrGenPackagePath, "/")
+	antlrGenPackageName := packageParts[len(packageParts) - 1]
+
+	startIndex := len("*" + antlrGenPackageName + ".")  //trim the beginning *packageName.
+	endIndex := len("Context")  //trim the ending Context
+
+	return antlrType[startIndex:len(antlrType) - endIndex]
 }
 
 func (receiver *AntlrTree) Text() string {
