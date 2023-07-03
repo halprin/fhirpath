@@ -2,15 +2,14 @@ package grammar
 
 import (
 	"github.com/antlr4-go/antlr/v4"
+	"github.com/halprin/fhirpath/grammar/antlrGen"
 )
-
-//go:generate ./generate.sh
 
 func CreateTree(fhirPath string) (Tree, error) {
 	input := antlr.NewInputStream(fhirPath)
-	lexer := NewFhirpathLexer(input)
+	lexer := antlrGen.NewFhirpathLexer(input)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
-	parser := NewFhirpathParser(stream)
+	parser := antlrGen.NewFhirpathParser(stream)
 	parser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 	tree := parser.Expression()
 
