@@ -2,6 +2,7 @@ package engine
 
 import (
 	"errors"
+	"fmt"
 	"github.com/halprin/fhirpath/grammar"
 	"reflect"
 )
@@ -15,7 +16,9 @@ func Execute[T any](fhir map[string]interface{}, fhirPathTree grammar.Tree) ([]T
 
 	castResult, ok := result.([]T)
 	if !ok {
-		return nil, errors.New("the result of FHIRPath cannot be cast into the requested type")
+//		return nil, errors.New("the result of FHIRPath cannot be cast into the requested type")
+		zeroT := new(T)
+		return nil, fmt.Errorf("the result of FHIRPath (value=%v, type=%v) cannot be cast into the requested type ([]%v)", result, reflect.TypeOf(result), reflect.TypeOf(*zeroT))
 	}
 
 	return castResult, nil
