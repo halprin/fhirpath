@@ -2,29 +2,56 @@ package engine
 
 import (
 	"errors"
+	"fmt"
 	"github.com/halprin/fhirpath/grammar"
+	"github.com/halprin/rangechain"
 	"reflect"
 )
 
 func Execute[T any](fhir map[string]interface{}, fhirPathTree grammar.Tree) ([]T, error) {
-	result, err := (&engine{}).Execute(fhir, fhirPathTree)
+	fhirOptions := []map[string]interface{}{fhir}
+	result, err := (&engine{}).Execute(fhirOptions, fhirPathTree)
 	if err != nil {
 		return nil, err
 	}
 
-	castResult, ok := result.([]T)
+	castResult, ok := result.([]interface{})
 	if !ok {
-		return nil, errors.New("the result of FHIRPath cannot be cast into the requested type")
+		return nil, fmt.Errorf("the result of FHIRPath (value=%v, type=%v) cannot be cast into the []interface{} type", result, reflect.TypeOf(result))
 	}
 
-	return castResult, nil
+	concreteTypeResult, err := filterOutNonRequestedTypes[T](castResult)
+	if err != nil {
+		return nil, err
+	}
+
+	return concreteTypeResult, nil
+}
+
+func filterOutNonRequestedTypes[T any](interfaceSlice []interface{}) ([]T, error) {
+	filteredInterfaceSlice, err := rangechain.FromSlice(interfaceSlice).Filter(func(currentInterface interface{}) (bool, error) {
+		_, ok := currentInterface.(T)
+		return ok, nil
+	}).Slice()
+
+	if err != nil {
+		return nil, err
+	}
+
+	filteredRealValues := make([]T, 0, len(filteredInterfaceSlice))
+	for _, filteredInterface := range filteredInterfaceSlice {
+		realType := filteredInterface.(T)
+		filteredRealValues = append(filteredRealValues, realType)
+	}
+
+	return filteredRealValues, nil
 }
 
 type engine struct {
 
 }
 
-func (receiver *engine) Execute(fhir map[string]interface{}, node grammar.Tree) (interface{}, error) {
+func (receiver *engine) Execute(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
 
 	engineReflect := reflect.ValueOf(receiver)
 
@@ -33,7 +60,7 @@ func (receiver *engine) Execute(fhir map[string]interface{}, node grammar.Tree) 
 		return nil, errors.New("engine method " + node.Rule() + " doesn't exist")
 	}
 
-	methodArguments := []reflect.Value{reflect.ValueOf(fhir), reflect.ValueOf(node)}
+	methodArguments := []reflect.Value{reflect.ValueOf(fhirOptions), reflect.ValueOf(node)}
 	results := engineMethod.Call(methodArguments)
 	if len(results) != 2 {
 		return nil, errors.New("engine method " + node.Rule() + " doesn't return two values")
