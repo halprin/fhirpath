@@ -4,6 +4,6 @@ import (
 	"github.com/halprin/fhirpath/grammar"
 )
 
-func (receiver *engine) InvocationTerm(fhir map[string]interface{}, node grammar.Tree) (interface{}, error) {
-	return receiver.Execute(fhir, node.Children()[0])
+func (receiver *engine) InvocationTerm(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
+	return receiver.Execute(fhirOptions, node.Children()[0])
 }

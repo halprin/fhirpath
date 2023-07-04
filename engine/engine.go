@@ -7,7 +7,8 @@ import (
 )
 
 func Execute[T any](fhir map[string]interface{}, fhirPathTree grammar.Tree) ([]T, error) {
-	result, err := (&engine{}).Execute(fhir, fhirPathTree)
+	fhirOptions := []map[string]interface{}{fhir}
+	result, err := (&engine{}).Execute(fhirOptions, fhirPathTree)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +25,7 @@ type engine struct {
 
 }
 
-func (receiver *engine) Execute(fhir map[string]interface{}, node grammar.Tree) (interface{}, error) {
+func (receiver *engine) Execute(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
 
 	engineReflect := reflect.ValueOf(receiver)
 
@@ -33,7 +34,7 @@ func (receiver *engine) Execute(fhir map[string]interface{}, node grammar.Tree) 
 		return nil, errors.New("engine method " + node.Rule() + " doesn't exist")
 	}
 
-	methodArguments := []reflect.Value{reflect.ValueOf(fhir), reflect.ValueOf(node)}
+	methodArguments := []reflect.Value{reflect.ValueOf(fhirOptions), reflect.ValueOf(node)}
 	results := engineMethod.Call(methodArguments)
 	if len(results) != 2 {
 		return nil, errors.New("engine method " + node.Rule() + " doesn't return two values")
