@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/halprin/fhirpath/grammar"
+	"github.com/halprin/rangechain"
 	"reflect"
 )
 
@@ -14,14 +15,36 @@ func Execute[T any](fhir map[string]interface{}, fhirPathTree grammar.Tree) ([]T
 		return nil, err
 	}
 
-	castResult, ok := result.([]T)
+	castResult, ok := result.([]interface{})
 	if !ok {
-//		return nil, errors.New("the result of FHIRPath cannot be cast into the requested type")
-		zeroT := new(T)
-		return nil, fmt.Errorf("the result of FHIRPath (value=%v, type=%v) cannot be cast into the requested type ([]%v)", result, reflect.TypeOf(result), reflect.TypeOf(*zeroT))
+		return nil, fmt.Errorf("the result of FHIRPath (value=%v, type=%v) cannot be cast into the []interface{} type", result, reflect.TypeOf(result))
 	}
 
-	return castResult, nil
+	concreteTypeResult, err := filterOutNonRequestedTypes[T](castResult)
+	if err != nil {
+		return nil, err
+	}
+
+	return concreteTypeResult, nil
+}
+
+func filterOutNonRequestedTypes[T any](interfaceSlice []interface{}) ([]T, error) {
+	filteredInterfaceSlice, err := rangechain.FromSlice(interfaceSlice).Filter(func(currentInterface interface{}) (bool, error) {
+		_, ok := currentInterface.(T)
+		return ok, nil
+	}).Slice()
+
+	if err != nil {
+		return nil, err
+	}
+
+	filteredRealValues := make([]T, 0, len(filteredInterfaceSlice))
+	for _, filteredInterface := range filteredInterfaceSlice {
+		realType := filteredInterface.(T)
+		filteredRealValues = append(filteredRealValues, realType)
+	}
+
+	return filteredRealValues, nil
 }
 
 type engine struct {

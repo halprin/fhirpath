@@ -38,7 +38,19 @@ func (receiver *engine) MemberInvocation(fhirOptions []map[string]interface{}, n
 		return convertInterfaceSliceToFhirOptionSlice(filteredFhirOptionsInterface), nil
 	}
 
-	return "key", nil
+	//a filter on some generic field.  I.e. gender.
+	return rangechain.FromSlice(fhirOptions).Filter(func(currentFhirOptionInterface interface{}) (bool, error) {
+		currentFhirOption := currentFhirOptionInterface.(map[string]interface{})
+
+		_, ok := currentFhirOption[identifier]
+		return ok, nil
+	}).Map(func(currentFhirOptionInterface interface{}) (interface{}, error) {
+		currentFhirOption := currentFhirOptionInterface.(map[string]interface{})
+
+		fieldValueInterface := currentFhirOption[identifier]
+
+		return fieldValueInterface, nil
+	}).Slice()
 }
 
 func convertInterfaceSliceToFhirOptionSlice(interfaceSlice []interface{}) []map[string]interface{} {
