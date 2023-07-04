@@ -53,6 +53,8 @@ func (receiver *engine) MemberInvocation(fhirOptions []map[string]interface{}, n
 	}).Slice()
 }
 
+//used to convert a generic `[]interface{}` value to a slice of a FHIR option (`map[string]interface{}`)
+//this is needed for some of the type casting in the execution engine.  E.g. `InvocationExpression`.
 func convertInterfaceSliceToFhirOptionSlice(interfaceSlice []interface{}) []map[string]interface{} {
 	fhirOptions := make([]map[string]interface{}, 0, len(interfaceSlice))
 	
