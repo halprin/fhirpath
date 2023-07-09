@@ -50,7 +50,7 @@ func (receiver *engine) MemberInvocation(fhirOptions []map[string]interface{}, n
 		fieldValueInterface := currentFhirOption[identifier]
 
 		return fieldValueInterface, nil
-	}).Slice()
+	}).Flatten().Slice()
 }
 
 //used to convert a generic `[]interface{}` value to a slice of a FHIR option (`map[string]interface{}`)
