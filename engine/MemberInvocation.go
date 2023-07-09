@@ -2,7 +2,6 @@ package engine
 
 import (
 	"github.com/halprin/fhirpath/grammar"
-	"github.com/halprin/rangechain"
 	"unicode"
 	"unicode/utf8"
 )
@@ -18,50 +17,61 @@ func (receiver *engine) MemberInvocation(fhirOptions []map[string]interface{}, n
 	firstCharacter, _ := utf8.DecodeRuneInString(identifier)
 	if unicode.IsUpper(firstCharacter) {
 		//wants to filter on a specific resource type.  I.e. 'Patient'.  This is specific to the "resourceType" field.
-		filteredFhirOptionsInterface, err := rangechain.FromSlice(fhirOptions).Filter(func(currentFhirOptionInterface interface{}) (bool, error) {
-			currentFhirOption := currentFhirOptionInterface.(map[string]interface{})
 
-			resourceTypeInterface, ok := currentFhirOption["resourceType"]
-			if !ok {
-				return false, nil
+		var filteredFhirOptions []map[string]interface{}
+
+		for _, currentFhirOption := range fhirOptions {
+			if fhirOptionHasRequestedFieldValue(currentFhirOption, "resourceType", identifier) {
+				filteredFhirOptions = append(filteredFhirOptions, currentFhirOption)
 			}
-
-			resourceType := resourceTypeInterface.(string)
-
-			return resourceType == identifier, nil
-		}).Slice()
-
-		if err != nil {
-			return nil, err
 		}
 
-		return convertInterfaceSliceToFhirOptionSlice(filteredFhirOptionsInterface), nil
+		return filteredFhirOptions, nil
 	}
 
 	//a filter on some generic field.  I.e. gender.
-	return rangechain.FromSlice(fhirOptions).Filter(func(currentFhirOptionInterface interface{}) (bool, error) {
-		currentFhirOption := currentFhirOptionInterface.(map[string]interface{})
 
-		_, ok := currentFhirOption[identifier]
-		return ok, nil
-	}).Map(func(currentFhirOptionInterface interface{}) (interface{}, error) {
-		currentFhirOption := currentFhirOptionInterface.(map[string]interface{})
+	var filteredOptions []interface{}
 
-		fieldValueInterface := currentFhirOption[identifier]
-
-		return fieldValueInterface, nil
-	}).Flatten().Slice()
-}
-
-//used to convert a generic `[]interface{}` value to a slice of a FHIR option (`map[string]interface{}`)
-//this is needed for some of the type casting in the execution engine.  E.g. `InvocationExpression`.
-func convertInterfaceSliceToFhirOptionSlice(interfaceSlice []interface{}) []map[string]interface{} {
-	fhirOptions := make([]map[string]interface{}, 0, len(interfaceSlice))
-	
-	for _, interfaceValue := range interfaceSlice {
-		fhirOption := interfaceValue.(map[string]interface{})
-		fhirOptions = append(fhirOptions, fhirOption)
+	for _, currentFhirOption := range fhirOptions {
+		value, ok := currentFhirOption[identifier]
+		if ok {
+			filteredOptions = append(filteredOptions, value)
+		}
 	}
 
-	return fhirOptions
+	//the filtered options could contain a slice itself, so those need to be unwrapped
+	return flatten(filteredOptions), nil
+}
+
+func fhirOptionHasRequestedFieldValue[T comparable](fhirOption map[string]interface{}, fieldName string, fieldValue T) bool {
+	fhirValueInterface, ok := fhirOption[fieldName]
+	if !ok {
+		return false
+	}
+
+	fhirValue, ok := fhirValueInterface.(T)
+	if !ok {
+		return false
+	}
+
+	return fhirValue == fieldValue
+}
+
+func flatten(slices []interface{}) []interface{} {
+	var flattened []interface{}
+
+	for _, currentPossibleSlice := range slices {
+
+		currentSlice, ok := currentPossibleSlice.([]interface{})
+
+		if !ok {
+			flattened = append(flattened, currentPossibleSlice)
+			continue
+		}
+
+		flattened = append(flattened, currentSlice...)
+	}
+
+	return flattened
 }
