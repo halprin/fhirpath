@@ -4,8 +4,8 @@ import (
 	"github.com/halprin/fhirpath/grammar"
 )
 
-func (receiver *engine) Function(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
-	var arguments []interface{}
+func (receiver *engine) Function(fhirOptions []map[string]interface{}, node grammar.Tree) ([]interface{}, error) {
+	var functionNameAndParams []interface{}
 	
 	for _, childNode := range node.Children() {
 		value, err := receiver.Execute(fhirOptions, childNode)
@@ -13,8 +13,8 @@ func (receiver *engine) Function(fhirOptions []map[string]interface{}, node gram
 			return nil, err
 		}
 		
-		arguments = append(arguments, value)
+		functionNameAndParams = append(functionNameAndParams, value)
 	}
 	
-	return arguments, nil
+	return functionNameAndParams, nil
 }

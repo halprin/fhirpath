@@ -64,21 +64,3 @@ func fhirOptionHasRequestedFieldValue[T comparable](fhirOption map[string]interf
 
 	return fhirValue == fieldValue
 }
-
-func flatten(slices []interface{}) []interface{} {
-	var flattened []interface{}
-
-	for _, currentPossibleSlice := range slices {
-
-		currentSlice, ok := currentPossibleSlice.([]interface{})
-
-		if !ok {
-			flattened = append(flattened, currentPossibleSlice)
-			continue
-		}
-
-		flattened = append(flattened, currentSlice...)
-	}
-
-	return flattened
-}
