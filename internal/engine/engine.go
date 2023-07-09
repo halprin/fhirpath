@@ -3,7 +3,7 @@ package engine
 import (
 	"errors"
 	"fmt"
-	"github.com/halprin/fhirpath/grammar"
+	"github.com/halprin/fhirpath/internal/grammar"
 	"github.com/halprin/rangechain"
 	"reflect"
 )

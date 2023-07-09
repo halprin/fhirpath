@@ -2,8 +2,8 @@ package fhirpath
 
 import (
 	"encoding/json"
-	"github.com/halprin/fhirpath/engine"
-	"github.com/halprin/fhirpath/grammar"
+	"github.com/halprin/fhirpath/internal/engine"
+	"github.com/halprin/fhirpath/internal/grammar"
 )
 
 func Evaluate[T any](fhirString string, fhirPath string) ([]T, error) {

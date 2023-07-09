@@ -15,6 +15,6 @@
 # vendor/
 
 # Antlr generation ignore
-/grammar/antlrGen/*.interp
-/grammar/antlrGen/*.tokens
-/grammar/antlrGen/fhirpath_*.go
+/internal/grammar/antlrGen/*.interp
+/internal/grammar/antlrGen/*.tokens
+/internal/grammar/antlrGen/fhirpath_*.go

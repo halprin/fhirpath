@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"github.com/halprin/fhirpath/grammar"
+	"github.com/halprin/fhirpath/internal/grammar"
 	"unicode"
 	"unicode/utf8"
 )
