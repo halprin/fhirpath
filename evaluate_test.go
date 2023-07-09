@@ -9,14 +9,14 @@ import (
 //go:embed sample/patient.json
 var fhirPatient string
 
-func TestEvaluate_SimpleChain(t *testing.T) {
+func TestEvaluate_Value(t *testing.T) {
 	result, err := Evaluate[string](fhirPatient, "Patient.gender")
 
 	assert.NoError(t, err)
 	assert.Contains(t, result, "female")
 }
 
-func TestEvaluate_Where(t *testing.T) {
+func TestEvaluate_Where_Equal(t *testing.T) {
 	result, err := Evaluate[string](fhirPatient, "Patient.identifier.where(system='http://new-republic.gov/galactic-citizen-identifier').value")
 
 	assert.NoError(t, err)
