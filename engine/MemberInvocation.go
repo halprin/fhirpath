@@ -17,20 +17,27 @@ func (receiver *engine) MemberInvocation(fhirOptions []map[string]interface{}, n
 	firstCharacter, _ := utf8.DecodeRuneInString(identifier)
 	if unicode.IsUpper(firstCharacter) {
 		//wants to filter on a specific resource type.  I.e. 'Patient'.  This is specific to the "resourceType" field.
-
-		var filteredFhirOptions []map[string]interface{}
-
-		for _, currentFhirOption := range fhirOptions {
-			if fhirOptionHasRequestedFieldValue(currentFhirOption, "resourceType", identifier) {
-				filteredFhirOptions = append(filteredFhirOptions, currentFhirOption)
-			}
-		}
-
-		return filteredFhirOptions, nil
+		return filterResourceType(fhirOptions, identifier), nil
 	}
 
 	//a filter on some generic field.  I.e. gender.
 
+	return filterAndMap(fhirOptions, identifier), nil
+}
+
+func filterResourceType(fhirOptions []map[string]interface{}, identifier string) []map[string]interface{} {
+	var filteredFhirOptions []map[string]interface{}
+
+	for _, currentFhirOption := range fhirOptions {
+		if fhirOptionHasRequestedFieldValue(currentFhirOption, "resourceType", identifier) {
+			filteredFhirOptions = append(filteredFhirOptions, currentFhirOption)
+		}
+	}
+
+	return filteredFhirOptions
+}
+
+func filterAndMap(fhirOptions []map[string]interface{}, identifier string) []interface{} {
 	var filteredOptions []interface{}
 
 	for _, currentFhirOption := range fhirOptions {
@@ -41,7 +48,7 @@ func (receiver *engine) MemberInvocation(fhirOptions []map[string]interface{}, n
 	}
 
 	//the filtered options could contain a slice itself, so those need to be unwrapped
-	return flatten(filteredOptions), nil
+	return flatten(filteredOptions)
 }
 
 func fhirOptionHasRequestedFieldValue[T comparable](fhirOption map[string]interface{}, fieldName string, fieldValue T) bool {

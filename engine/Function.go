@@ -1,0 +1,20 @@
+package engine
+
+import (
+	"github.com/halprin/fhirpath/grammar"
+)
+
+func (receiver *engine) Function(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
+	var arguments []interface{}
+	
+	for _, childNode := range node.Children() {
+		value, err := receiver.Execute(fhirOptions, childNode)
+		if err != nil {
+			return nil, err
+		}
+		
+		arguments = append(arguments, value)
+	}
+	
+	return arguments, nil
+}
