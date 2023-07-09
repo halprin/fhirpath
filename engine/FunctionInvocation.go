@@ -1,11 +1,61 @@
 package engine
 
 import (
+	"errors"
+	"fmt"
 	"github.com/halprin/fhirpath/grammar"
 )
 
 func (receiver *engine) FunctionInvocation(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
-	args, err := receiver.Execute(fhirOptions, node.Children()[0])
-	//TODO: apply the stuff learned by your children to do the function.  E.g. `where`.  Or could this be done in `Function`?
-	return args, err
+	functionInterface, err := receiver.Execute(fhirOptions, node.Children()[0])
+	if err != nil {
+		return nil, err
+	}
+
+	functionConfig, ok := functionInterface.([]interface{})
+	if !ok {
+		return nil, errors.New("FunctionInvocation: the function configuration was not a slice")
+	}
+
+	functionNameInterface := functionConfig[0]
+	functionName, ok := functionNameInterface.(string)
+	if !ok {
+		return nil, errors.New("FunctionInvocation: the function name was not a string")
+	}
+
+	functionParametersInterface := functionConfig[1]
+	functionParameters := functionParametersInterface.([]interface{})
+	if !ok {
+		return nil, errors.New("FunctionInvocation: the function parameters was not a slice")
+	}
+
+	//TODO: implement more functions
+	switch functionName {
+	case "where":
+		return where(fhirOptions, functionParameters)
+	default:
+		return nil, fmt.Errorf("FunctionInvocation: function name %s is unknown", functionName)
+	}
+}
+
+func where(fhirOptions []map[string]interface{}, parameters []interface{}) ([]map[string]interface{}, error) {
+	//where has only 1 parameter: the evaluation of the expression inside
+
+	booleanEvaluation, ok := parameters[0].([]bool)
+	if !ok {
+		return nil, errors.New("FunctionInvocation: where: the first parameter was not a boolean slice")
+	}
+
+	var filteredFhirOptions []map[string]interface{}
+
+	for index, currentFhirOption := range fhirOptions {
+		if !booleanEvaluation[index] {
+			//the evaluation was found not matching so we filter OUT this FHIR option
+			continue
+		}
+
+		filteredFhirOptions = append(filteredFhirOptions, currentFhirOption)
+	}
+
+	return filteredFhirOptions, nil
 }
