@@ -18,3 +18,6 @@
 /internal/grammar/antlrGen/*.interp
 /internal/grammar/antlrGen/*.tokens
 /internal/grammar/antlrGen/fhirpath_*.go
+
+# Ignore VSCode settings files
+.vscode
