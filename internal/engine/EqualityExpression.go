@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"github.com/halprin/fhirpath/internal/grammar"
 )
 
@@ -10,15 +11,18 @@ func (receiver *engine) EqualityExpression(fhirOptions []map[string]interface{},
 	leftOperands := receiver.populateOperands(fhirOptions, node.Children()[0])
 	rightOperands := receiver.populateOperands(fhirOptions, node.Children()[1])
 	
-	//TODO: there are multiple terminal text that we need to parse out.  E.g. `=`, `!=`, etc.
-	
-	equalitySlice := make([]bool, len(fhirOptions))
-	
-	for index, _ := range fhirOptions {
-		equalitySlice[index] = leftOperands[index] == rightOperands[index]
+
+	operation := node.TerminalTexts()[0]
+
+	//TODO: implement more operations
+	switch operation {
+	case "=":
+		return equals(fhirOptions, leftOperands, rightOperands)
+	default:
+		return nil, fmt.Errorf("EqualityExpression: operation %s is unknown", operation)
 	}
-	
-	return equalitySlice, nil
+
+
 }
 
 func (receiver *engine) populateOperands(fhirOptions []map[string]interface{}, node grammar.Tree) []interface{} {
@@ -37,4 +41,14 @@ func (receiver *engine) populateOperands(fhirOptions []map[string]interface{}, n
 	operandValues = flatten(operandValues)
 	
 	return operandValues
+}
+
+func equals(fhirOptions []map[string]interface{}, leftOperands []interface{}, rightOperands []interface{}) ([]bool, error) {
+	equalitySlice := make([]bool, len(fhirOptions))
+
+	for index, _ := range fhirOptions {
+		equalitySlice[index] = leftOperands[index] == rightOperands[index]
+	}
+
+	return equalitySlice, nil
 }
