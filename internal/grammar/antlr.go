@@ -2,7 +2,7 @@ package grammar
 
 import (
 	"github.com/antlr4-go/antlr/v4"
-	"github.com/halprin/fhirpath/grammar/antlrGen"
+	"github.com/halprin/fhirpath/internal/grammar/antlrGen"
 )
 
 func CreateTree(fhirPath string) (Tree, error) {

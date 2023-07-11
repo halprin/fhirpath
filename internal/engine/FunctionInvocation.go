@@ -3,7 +3,7 @@ package engine
 import (
 	"errors"
 	"fmt"
-	"github.com/halprin/fhirpath/grammar"
+	"github.com/halprin/fhirpath/internal/grammar"
 )
 
 func (receiver *engine) FunctionInvocation(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
