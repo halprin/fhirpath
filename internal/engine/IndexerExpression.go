@@ -26,5 +26,9 @@ func (receiver *engine) IndexerExpression(fhirOptions []map[string]interface{}, 
 		return nil, fmt.Errorf("IndexerExpression: the index %v is not an integer (%s)", indexInterface, node.Text())
 	}
 	
+	if len(options) - 1 < index {
+		return []interface{}{}, nil
+	}
+
 	return []interface{}{options[index]}, nil
 }

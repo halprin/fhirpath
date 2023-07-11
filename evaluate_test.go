@@ -42,3 +42,10 @@ func TestEvaluate_Index_NotInteger(t *testing.T) {
 
 	assert.Error(t, err)
 }
+
+func TestEvaluate_Index_AboveSizeBecomesEmptyResult(t *testing.T) {
+	result, err := Evaluate[string](fhirPatient, "Patient.identifier[2].value")
+
+	assert.NoError(t, err)
+	assert.Len(t, result, 0)
+}
