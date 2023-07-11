@@ -22,3 +22,10 @@ func TestEvaluate_Where_Equal(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Contains(t, result, "b531d827-de9a-4e2e-a53b-8621bd29f656")
 }
+
+func TestEvaluate_Where_NotEqual(t *testing.T) {
+	result, err := Evaluate[string](fhirPatient, "Patient.identifier.where(system!='http://new-republic.gov/galactic-citizen-identifier').value")
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, "S99955754")
+}

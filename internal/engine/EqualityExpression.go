@@ -18,6 +18,8 @@ func (receiver *engine) EqualityExpression(fhirOptions []map[string]interface{},
 	switch operation {
 	case "=":
 		return equals(fhirOptions, leftOperands, rightOperands)
+	case "!=":
+		return notEquals(fhirOptions, leftOperands, rightOperands)
 	default:
 		return nil, fmt.Errorf("EqualityExpression: operation %s is unknown", operation)
 	}
@@ -48,6 +50,16 @@ func equals(fhirOptions []map[string]interface{}, leftOperands []interface{}, ri
 
 	for index, _ := range fhirOptions {
 		equalitySlice[index] = leftOperands[index] == rightOperands[index]
+	}
+
+	return equalitySlice, nil
+}
+
+func notEquals(fhirOptions []map[string]interface{}, leftOperands []interface{}, rightOperands []interface{}) ([]bool, error) {
+	equalitySlice := make([]bool, len(fhirOptions))
+
+	for index, _ := range fhirOptions {
+		equalitySlice[index] = leftOperands[index] != rightOperands[index]
 	}
 
 	return equalitySlice, nil
