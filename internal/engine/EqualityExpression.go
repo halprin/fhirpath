@@ -46,21 +46,27 @@ func (receiver *engine) populateOperands(fhirOptions []map[string]interface{}, n
 }
 
 func equals(fhirOptions []map[string]interface{}, leftOperands []interface{}, rightOperands []interface{}) ([]bool, error) {
-	equalitySlice := make([]bool, len(fhirOptions))
-
-	for index, _ := range fhirOptions {
-		equalitySlice[index] = leftOperands[index] == rightOperands[index]
+	equalityFunction := func(leftOperand interface{}, rightOperand interface{}) bool {
+		return leftOperand == rightOperand
 	}
 
-	return equalitySlice, nil
+	return compareSlices(fhirOptions, leftOperands, rightOperands, equalityFunction)
 }
 
 func notEquals(fhirOptions []map[string]interface{}, leftOperands []interface{}, rightOperands []interface{}) ([]bool, error) {
-	equalitySlice := make([]bool, len(fhirOptions))
-
-	for index, _ := range fhirOptions {
-		equalitySlice[index] = leftOperands[index] != rightOperands[index]
+	notEqualityFunction := func(leftOperand interface{}, rightOperand interface{}) bool {
+		return leftOperand != rightOperand
 	}
 
-	return equalitySlice, nil
+	return compareSlices(fhirOptions, leftOperands, rightOperands, notEqualityFunction)
+}
+
+func compareSlices(fhirOptions []map[string]interface{}, leftOperands []interface{}, rightOperands []interface{}, comparisonFunction func(interface{}, interface{}) bool) ([]bool, error) {
+	comparisonSlice := make([]bool, len(fhirOptions))
+
+	for index, _ := range fhirOptions {
+		comparisonSlice[index] = comparisonFunction(leftOperands[index], rightOperands[index])
+	}
+
+	return comparisonSlice, nil
 }
