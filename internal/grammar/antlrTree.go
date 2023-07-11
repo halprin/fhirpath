@@ -8,10 +8,11 @@ import (
 )
 
 type AntlrTree struct {
-	text     string
-	rule     string
-	parent   *AntlrTree
-	children []Tree
+	text          string
+	terminalTexts []string
+	rule          string
+	parent        *AntlrTree
+	children      []Tree
 }
 
 func NewAntlrTree(antlrTree antlr.RuleContext) *AntlrTree {
@@ -19,18 +20,28 @@ func NewAntlrTree(antlrTree antlr.RuleContext) *AntlrTree {
 }
 
 func newAntlrTreeWithParent(antlrTree antlr.RuleContext, parent *AntlrTree) *AntlrTree {
-	tree := &AntlrTree{}
-
-	tree.text = antlrTree.GetText()
-	tree.rule = trimmedAntlrType(reflect.TypeOf(antlrTree).String())
-	tree.parent = parent
+	tree := &AntlrTree{
+		text: antlrTree.GetText(),
+		rule: trimmedAntlrType(reflect.TypeOf(antlrTree).String()),
+		parent: parent,
+	}
 
 	children := make([]Tree, 0, antlrTree.GetChildCount())
+	var terminalTexts []string
 
 	for _, currentChild := range antlrTree.GetChildren() {
 		payload, ok := currentChild.(antlr.RuleContext)
 
 		if !ok {
+			//it could be a terminal node
+			terminalPayload, ok := currentChild.(antlr.TerminalNode)
+			if !ok {
+				//the child was nothing we need to parse
+				continue
+			}
+
+			terminalTexts = append(terminalTexts, terminalPayload.GetText())
+
 			continue
 		}
 
@@ -40,6 +51,7 @@ func newAntlrTreeWithParent(antlrTree antlr.RuleContext, parent *AntlrTree) *Ant
 	}
 
 	tree.children = children
+	tree.terminalTexts = terminalTexts
 
 	return tree
 }
@@ -59,6 +71,10 @@ func trimmedAntlrType(antlrType string) string {
 
 func (receiver *AntlrTree) Text() string {
 	return receiver.text
+}
+
+func (receiver *AntlrTree) TerminalTexts() []string {
+	return receiver.terminalTexts
 }
 
 func (receiver *AntlrTree) Rule() string {
