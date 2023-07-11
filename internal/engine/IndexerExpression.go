@@ -1,12 +1,11 @@
 package engine
 
 import (
-	"errors"
 	"fmt"
 	"github.com/halprin/fhirpath/internal/grammar"
 )
 
-func (receiver *engine) IndexerExpression(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
+func (receiver *engine) IndexerExpression(fhirOptions []map[string]interface{}, node grammar.Tree) ([]interface{}, error) {
 	optionsInterface, err := receiver.Execute(fhirOptions, node.Children()[0])
 	if err != nil {
 		return nil, err
@@ -14,7 +13,7 @@ func (receiver *engine) IndexerExpression(fhirOptions []map[string]interface{}, 
 	
 	options, ok := optionsInterface.([]interface{})
 	if !ok {
-		return nil, errors.New("IndexerExpression: the options was not a slice")
+		return nil, fmt.Errorf("IndexerExpression: the left of the index was not a slice (%s)", node.Text())
 	}
 	
 	indexInterface, err := receiver.Execute(fhirOptions, node.Children()[1])
@@ -24,8 +23,8 @@ func (receiver *engine) IndexerExpression(fhirOptions []map[string]interface{}, 
 	
 	index, ok := indexInterface.(int)
 	if !ok {
-		return nil, fmt.Errorf("IndexerExpression: the index %v is not an integer", indexInterface)
+		return nil, fmt.Errorf("IndexerExpression: the index %v is not an integer (%s)", indexInterface, node.Text())
 	}
 	
-	return options[index], nil
+	return []interface{}{options[index]}, nil
 }

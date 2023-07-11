@@ -14,5 +14,5 @@ func (receiver *engine) NumberLiteral(fhirOptions []map[string]interface{}, node
 		return strconv.ParseFloat(literal, 64)
 	}
 	
-	return strconv.ParseInt(literal, 10, 0)
+	return strconv.Atoi(literal)
 }
