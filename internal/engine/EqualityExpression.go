@@ -14,12 +14,12 @@ func (receiver *engine) EqualityExpression(fhirOptions []map[string]interface{},
 
 	operation := node.TerminalTexts()[0]
 
-	//TODO: implement more operations
+	//TODO: implement equivalent and not equivalent.  https://hl7.org/fhirpath/#equivalent
 	switch operation {
 	case "=":
-		return equals(fhirOptions, leftOperands, rightOperands)
+		return compareSlices(fhirOptions, leftOperands, rightOperands, equals)
 	case "!=":
-		return notEquals(fhirOptions, leftOperands, rightOperands)
+		return compareSlices(fhirOptions, leftOperands, rightOperands, notEquals)
 	default:
 		return nil, fmt.Errorf("EqualityExpression: operation %s is unknown", operation)
 	}
@@ -45,22 +45,6 @@ func (receiver *engine) populateOperands(fhirOptions []map[string]interface{}, n
 	return operandValues
 }
 
-func equals(fhirOptions []map[string]interface{}, leftOperands []interface{}, rightOperands []interface{}) ([]bool, error) {
-	equalityFunction := func(leftOperand interface{}, rightOperand interface{}) bool {
-		return leftOperand == rightOperand
-	}
-
-	return compareSlices(fhirOptions, leftOperands, rightOperands, equalityFunction)
-}
-
-func notEquals(fhirOptions []map[string]interface{}, leftOperands []interface{}, rightOperands []interface{}) ([]bool, error) {
-	notEqualityFunction := func(leftOperand interface{}, rightOperand interface{}) bool {
-		return leftOperand != rightOperand
-	}
-
-	return compareSlices(fhirOptions, leftOperands, rightOperands, notEqualityFunction)
-}
-
 func compareSlices(fhirOptions []map[string]interface{}, leftOperands []interface{}, rightOperands []interface{}, comparisonFunction func(interface{}, interface{}) bool) ([]bool, error) {
 	comparisonSlice := make([]bool, len(fhirOptions))
 
@@ -69,4 +53,12 @@ func compareSlices(fhirOptions []map[string]interface{}, leftOperands []interfac
 	}
 
 	return comparisonSlice, nil
+}
+
+func equals(leftOperand interface{}, rightOperand interface{}) bool {
+	return leftOperand == rightOperand
+}
+
+func notEquals(leftOperand interface{}, rightOperand interface{}) bool {
+	return leftOperand != rightOperand
 }
