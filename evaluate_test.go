@@ -29,3 +29,23 @@ func TestEvaluate_Where_NotEqual(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Contains(t, result, "S99955754")
 }
+
+func TestEvaluate_Index(t *testing.T) {
+	result, err := Evaluate[string](fhirPatient, "Patient.identifier[1].value")
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, "b531d827-de9a-4e2e-a53b-8621bd29f656")
+}
+
+func TestEvaluate_Index_NotInteger(t *testing.T) {
+	_, err := Evaluate[string](fhirPatient, "Patient.identifier[2.6].value")
+
+	assert.Error(t, err)
+}
+
+func TestEvaluate_Index_AboveSizeBecomesEmptyResult(t *testing.T) {
+	result, err := Evaluate[string](fhirPatient, "Patient.identifier[2].value")
+
+	assert.NoError(t, err)
+	assert.Len(t, result, 0)
+}

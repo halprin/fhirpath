@@ -23,8 +23,6 @@ func (receiver *engine) EqualityExpression(fhirOptions []map[string]interface{},
 	default:
 		return nil, fmt.Errorf("EqualityExpression: operation %s is unknown", operation)
 	}
-
-
 }
 
 func (receiver *engine) populateOperands(fhirOptions []map[string]interface{}, node grammar.Tree) []interface{} {
