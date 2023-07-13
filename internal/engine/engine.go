@@ -1,11 +1,13 @@
+// Package engine evaluates the grammar.Tree and returns the results.
 package engine
 
 import (
 	"errors"
 	"fmt"
+	"reflect"
+
 	"github.com/halprin/fhirpath/internal/grammar"
 	"github.com/halprin/rangechain"
-	"reflect"
 )
 
 func Execute[T any](fhir map[string]interface{}, fhirPathTree grammar.Tree) ([]T, error) {
@@ -28,6 +30,7 @@ func Execute[T any](fhir map[string]interface{}, fhirPathTree grammar.Tree) ([]T
 	return concreteTypeResult, nil
 }
 
+// filterOutNonRequestedTypes removes value from the input slice that doesn't match the type specified in the type parameter.
 func filterOutNonRequestedTypes[T any](interfaceSlice []interface{}) ([]T, error) {
 	filteredInterfaceSlice, err := rangechain.FromSlice(interfaceSlice).Filter(func(currentInterface interface{}) (bool, error) {
 		_, ok := currentInterface.(T)
@@ -48,7 +51,6 @@ func filterOutNonRequestedTypes[T any](interfaceSlice []interface{}) ([]T, error
 }
 
 type engine struct {
-
 }
 
 func (receiver *engine) Execute(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
