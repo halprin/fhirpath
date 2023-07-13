@@ -1,12 +1,14 @@
 package grammar
 
 import (
-	"github.com/antlr4-go/antlr/v4"
-	"github.com/halprin/fhirpath/internal/grammar/antlrGen"
 	"reflect"
 	"strings"
+
+	"github.com/antlr4-go/antlr/v4"
+	"github.com/halprin/fhirpath/internal/grammar/antlrGen"
 )
 
+// AntlrTree is an implementation of Tree.  It is specific to the ANTLR framework.
 type AntlrTree struct {
 	text          string
 	terminalTexts []string
@@ -15,14 +17,16 @@ type AntlrTree struct {
 	children      []Tree
 }
 
+// NewAntlrTree creates an *AntlrTree given the tree parsed from the ANTLR framework.
 func NewAntlrTree(antlrTree antlr.RuleContext) *AntlrTree {
 	return newAntlrTreeWithParent(antlrTree, nil)
 }
 
+// newAntlrTreeWithParent recursively creates an *AntlrTree by walking the tree parsed from the ANTLR framework.
 func newAntlrTreeWithParent(antlrTree antlr.RuleContext, parent *AntlrTree) *AntlrTree {
 	tree := &AntlrTree{
-		text: antlrTree.GetText(),
-		rule: trimmedAntlrType(reflect.TypeOf(antlrTree).String()),
+		text:   antlrTree.GetText(),
+		rule:   trimmedAntlrType(reflect.TypeOf(antlrTree).String()),
 		parent: parent,
 	}
 
@@ -56,17 +60,19 @@ func newAntlrTreeWithParent(antlrTree antlr.RuleContext, parent *AntlrTree) *Ant
 	return tree
 }
 
+// trimmedAntlrType removes the beginning `*`, package name, `.`, and ending `Context`.
+// For example, `*antlrGen.EqualityExpressionContext` turns into `EqualityExpression`.
 func trimmedAntlrType(antlrType string) string {
 
 	//get the package name used by the generated ANTLR code at run time
 	antlrGenPackagePath := reflect.TypeOf(antlrGen.FhirpathParser{}).PkgPath()
 	packageParts := strings.Split(antlrGenPackagePath, "/")
-	antlrGenPackageName := packageParts[len(packageParts) - 1]
+	antlrGenPackageName := packageParts[len(packageParts)-1]
 
-	startIndex := len("*" + antlrGenPackageName + ".")  //trim the beginning *packageName.
-	endIndex := len("Context")  //trim the ending Context
+	startIndex := len("*" + antlrGenPackageName + ".") //trim the beginning *packageName.
+	endIndex := len("Context")                         //trim the ending Context
 
-	return antlrType[startIndex:len(antlrType) - endIndex]
+	return antlrType[startIndex : len(antlrType)-endIndex]
 }
 
 func (receiver *AntlrTree) Text() string {
