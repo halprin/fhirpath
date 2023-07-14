@@ -10,6 +10,8 @@ import (
 	"github.com/halprin/rangechain"
 )
 
+// Execute starts the evaluation of the grammar.Tree given the FHIR object.
+// It also filters out types that don't match the type parameter.
 func Execute[T any](fhir map[string]interface{}, fhirPathTree grammar.Tree) ([]T, error) {
 	fhirOptions := []map[string]interface{}{fhir}
 	result, err := (&engine{}).Execute(fhirOptions, fhirPathTree)
@@ -53,6 +55,7 @@ func filterOutNonRequestedTypes[T any](interfaceSlice []interface{}) ([]T, error
 type engine struct {
 }
 
+// Execute dynamicly calls the engine's method that matches the rule of the current grammar.Tree.
 func (receiver *engine) Execute(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
 
 	engineReflect := reflect.ValueOf(receiver)
