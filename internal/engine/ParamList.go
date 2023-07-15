@@ -4,6 +4,7 @@ import (
 	"github.com/halprin/fhirpath/internal/grammar"
 )
 
+// ParamList evaluates the children trees in turn and returns the results in turn.
 func (receiver *engine) ParamList(fhirOptions []map[string]interface{}, node grammar.Tree) ([]interface{}, error) {
 	var parameters []interface{}
 
