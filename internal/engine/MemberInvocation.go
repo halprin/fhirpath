@@ -1,11 +1,13 @@
 package engine
 
 import (
-	"github.com/halprin/fhirpath/internal/grammar"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/halprin/fhirpath/internal/grammar"
 )
 
+// MemberInvocation represents filtering based on a segment after a period in the FHIR path.
 func (receiver *engine) MemberInvocation(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
 	identifierInterface, err := receiver.Execute(fhirOptions, node.Children()[0])
 	if err != nil {

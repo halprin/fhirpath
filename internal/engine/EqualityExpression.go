@@ -2,15 +2,16 @@ package engine
 
 import (
 	"fmt"
+
 	"github.com/halprin/fhirpath/internal/grammar"
 )
 
+// EqualityExpression evaluates each child node against each FHIR option.  It then does the operation (equaliity, equivalent, not) between the right and the left, for each FHIR option.  This slice of boolean values is returned.
 func (receiver *engine) EqualityExpression(fhirOptions []map[string]interface{}, node grammar.Tree) ([]bool, error) {
 	//evaluate each operand against each FHIR option
-	
+
 	leftOperands := receiver.populateOperands(fhirOptions, node.Children()[0])
 	rightOperands := receiver.populateOperands(fhirOptions, node.Children()[1])
-	
 
 	operation := node.TerminalTexts()[0]
 
@@ -39,7 +40,7 @@ func (receiver *engine) populateOperands(fhirOptions []map[string]interface{}, n
 	}
 
 	operandValues = flatten(operandValues)
-	
+
 	return operandValues
 }
 

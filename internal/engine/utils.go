@@ -1,7 +1,7 @@
 package engine
 
-//used to convert a generic `[]interface{}` value to a slice of a FHIR option (`map[string]interface{}`)
-//this is needed for some of the type casting in the execution engine.  E.g. `InvocationExpression`.
+// convertInterfaceSliceToFhirOptionSlice converts a generic `[]interface{}` value to a slice of a FHIR option (`map[string]interface{}`)
+// This is needed for some of the type casting in the execution engine.
 func convertInterfaceSliceToFhirOptionSlice(interfaceSlice []interface{}) []map[string]interface{} {
 	fhirOptions := make([]map[string]interface{}, 0, len(interfaceSlice))
 
@@ -13,6 +13,7 @@ func convertInterfaceSliceToFhirOptionSlice(interfaceSlice []interface{}) []map[
 	return fhirOptions
 }
 
+// flatten flattens out any inner slices inside the passed in slice.
 func flatten(slices []interface{}) []interface{} {
 	var flattened []interface{}
 

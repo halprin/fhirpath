@@ -5,6 +5,7 @@ import (
 	"github.com/halprin/rangechain"
 )
 
+// InvocationExpression is all about evaluating a child tree, and then evaluate the next child tree given any FHIR option results that came from the previous tree evaluation.
 func (receiver *engine) InvocationExpression(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
 	return rangechain.FromSlice(node.Children()).ReduceWithInitialValue(func(accumulatorInterface interface{}, currentChildInterface interface{}) (interface{}, error) {
 		accumulator, ok := accumulatorInterface.([]map[string]interface{})
