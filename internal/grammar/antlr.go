@@ -12,7 +12,7 @@ func CreateTree(fhirPath string) (Tree, error) {
 	lexer := antlrGen.NewFhirpathLexer(input)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	parser := antlrGen.NewFhirpathParser(stream)
-	parser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+	parser.AddErrorListener(&ErrorHanderAppender{})
 	tree := parser.Expression()
 
 	return NewAntlrTree(tree), nil
