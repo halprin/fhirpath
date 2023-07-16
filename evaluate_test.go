@@ -17,6 +17,12 @@ func TestEvaluate_Value(t *testing.T) {
 	assert.Contains(t, result, "female")
 }
 
+func TestEvaluate_ParseError(t *testing.T) {
+	_, err := Evaluate[string](fhirPatient, "Patient..gender")
+
+	assert.Error(t, err)
+}
+
 func TestEvaluate_Where_Equal(t *testing.T) {
 	result, err := Evaluate[string](fhirPatient, "Patient.identifier.where(system='http://new-republic.gov/galactic-citizen-identifier').value")
 
