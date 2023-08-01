@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"encoding/xml"
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -39,15 +40,31 @@ func TestOfficial(t *testing.T) {
 	for _, group := range officialTests.Groups {
 		for _, test := range group.Tests {
 			testName := fmt.Sprintf("%s/%s", group.Name, test.Name)
-			t.Run(testName, officialTestTemplate(test.Expression, "", test.Outputs))
+			fhir, err := readFhirTestFile(test.InputFile)
+			assert.NoError(t, err)
+			t.Run(testName, officialTestTemplate(test.Expression, fhir, test.Outputs))
 		}
 	}
+}
+
+func readFhirTestFile(fileName string) (string, error) {
+	content, err := os.ReadFile(fmt.Sprintf("official_tests/r4/input/%s", fileName))
+	if err != nil {
+		return "", err
+	}
+
+	return string(content), nil
 }
 
 func officialTestTemplate(fhirPath string, fhir string, expectedResult []string) func(*testing.T) {
 	return func(t *testing.T) {
 		_, err := Evaluate[any](fhir, fhirPath)
 		if err != nil {
+			if len(expectedResult) == 0 {
+				//this was an expected error
+				t.Log("Successfully failed")
+				return
+			}
 			t.Logf("Evaluate failed with an error: %s", err.Error())
 		}
 	}
