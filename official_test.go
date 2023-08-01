@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -36,15 +37,19 @@ func TestOfficial(t *testing.T) {
 	var officialTests OfficialTests
 	err := xml.Unmarshal(officialTestXmlSpec, &officialTests)
 	assert.NoError(t, err)
-	//for each test, call officialTestTemplate(...) and then call t.Run() the return value
+
 	for _, group := range officialTests.Groups {
 		for _, test := range group.Tests {
 			testName := fmt.Sprintf("%s/%s", group.Name, test.Name)
-			fhir, err := readFhirTestFile(test.InputFile)
+			fhir, err := readFhirTestFile(convertXmlFileNameToJsonFileName(test.InputFile))
 			assert.NoError(t, err)
 			t.Run(testName, officialTestTemplate(test.Expression, fhir, test.Outputs))
 		}
 	}
+}
+
+func convertXmlFileNameToJsonFileName(fileName string) string {
+	return strings.Replace(fileName, ".xml", ".json", 1)
 }
 
 func readFhirTestFile(fileName string) (string, error) {
@@ -58,7 +63,7 @@ func readFhirTestFile(fileName string) (string, error) {
 
 func officialTestTemplate(fhirPath string, fhir string, expectedResult []string) func(*testing.T) {
 	return func(t *testing.T) {
-		_, err := Evaluate[any](fhir, fhirPath)
+		results, err := Evaluate[any](fhir, fhirPath)
 		if err != nil {
 			if len(expectedResult) == 0 {
 				//this was an expected error
@@ -67,5 +72,19 @@ func officialTestTemplate(fhirPath string, fhir string, expectedResult []string)
 			}
 			t.Logf("Evaluate failed with an error: %s", err.Error())
 		}
+
+		stringifiedResults := stringifySlice(results)
+
+		assert.ElementsMatch(t, expectedResult, stringifiedResults)
 	}
+}
+
+func stringifySlice[T any](results []T) []string {
+	stringValues := make([]string, len(results))
+
+	for index, result := range results {
+		stringValues[index] = fmt.Sprintf("%v", result)
+	}
+
+	return stringValues
 }
