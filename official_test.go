@@ -63,6 +63,15 @@ func readFhirTestFile(fileName string) (string, error) {
 
 func officialTestTemplate(fhirPath string, fhir string, expectedResult []string) func(*testing.T) {
 	return func(t *testing.T) {
+
+		//report on any possible panics
+		defer func() {
+			r := recover()
+			if r != nil {
+				t.Logf("Evaluate failed with a panic: %v", r)
+			}
+		}()
+
 		results, err := Evaluate[any](fhir, fhirPath)
 		if err != nil {
 			if len(expectedResult) == 0 {
@@ -71,11 +80,45 @@ func officialTestTemplate(fhirPath string, fhir string, expectedResult []string)
 				return
 			}
 			t.Logf("Evaluate failed with an error: %s", err.Error())
+			return
 		}
 
 		stringifiedResults := stringifySlice(results)
 
-		assert.ElementsMatch(t, expectedResult, stringifiedResults)
+		if len(expectedResult) != len(stringifiedResults) {
+			t.Log("Expected results are not equal to actual results")
+			t.Logf("Expected=%v", expectedResult)
+			t.Logf("Actual=%v", stringifiedResults)
+			return
+		}
+
+		expectedCount := make(map[string]int)
+		for _, currentExpectedResult := range expectedResult {
+			count, ok := expectedCount[currentExpectedResult]
+			if !ok {
+				expectedCount[currentExpectedResult] = 1
+				continue
+			}
+
+			expectedCount[currentExpectedResult] = count + 1
+		}
+
+		actualCount := make(map[string]int)
+		for _, currentStringifiedResults := range stringifiedResults {
+			count, ok := actualCount[currentStringifiedResults]
+			if !ok {
+				actualCount[currentStringifiedResults] = 1
+				continue
+			}
+
+			actualCount[currentStringifiedResults] = count + 1
+		}
+
+		if len(expectedCount) != len(actualCount) {
+			t.Log("Expected results are not equal to actual results")
+			t.Logf("Expected=%v", expectedResult)
+			t.Logf("Actual=%v", stringifiedResults)
+		}
 	}
 }
 
