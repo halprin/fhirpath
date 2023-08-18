@@ -25,11 +25,16 @@ type OfficialTestGroup struct {
 }
 
 type OfficialTest struct {
-	Name       string `xml:"name,attr"`
-	Expression string `xml:"expression"`
-	InputFile  string `xml:"inputfile,attr"`
-	//	Invalid    bool     `xml:"expression>invalid,attr"`
-	Outputs []string `xml:"output"`
+	Name string `xml:"name,attr"`
+	//	Expression string   `xml:"expression"`
+	Expression OfficialExpression `xml:"expression"`
+	InputFile  string             `xml:"inputfile,attr"`
+	Outputs    []string           `xml:"output"`
+}
+
+type OfficialExpression struct {
+	Expression string `xml:",chardata"`
+	Invalid    string `xml:"invalid,attr"`
 }
 
 func TestOfficial(t *testing.T) {
@@ -61,7 +66,7 @@ func readFhirTestFile(fileName string) (string, error) {
 	return string(content), nil
 }
 
-func officialTestTemplate(fhirPath string, fhir string, expectedResult []string) func(*testing.T) {
+func officialTestTemplate(expression OfficialExpression, fhir string, expectedResult []string) func(*testing.T) {
 	return func(t *testing.T) {
 
 		//report on any possible panics
@@ -72,9 +77,9 @@ func officialTestTemplate(fhirPath string, fhir string, expectedResult []string)
 			}
 		}()
 
-		results, err := Evaluate[any](fhir, fhirPath)
+		results, err := Evaluate[any](fhir, expression.Expression)
 		if err != nil {
-			if len(expectedResult) == 0 {
+			if expression.Invalid != "" {
 				//this was an expected error
 				t.Log("Successfully failed")
 				return
