@@ -2,6 +2,8 @@
 
 Evaluates [FHIR Path](https://hl7.org/fhirpath/) against [FHIR](http://hl7.org/fhir/) resources.
 
+This is a work in progress.  14 out of the 686 [official tests](https://hl7.org/fhirpath/tests.html) pass.
+
 ## Install
 
 Require `github.com/halprin/fhirpath` in your `go.mod` file or use `go` to add it.
