@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -119,7 +120,7 @@ func officialTestTemplate(expression OfficialExpression, fhir string, expectedRe
 			actualCount[currentStringifiedResults] = count + 1
 		}
 
-		if len(expectedCount) != len(actualCount) {
+		if !reflect.DeepEqual(expectedCount, actualCount) {
 			t.Log("Expected results are not equal to actual results")
 			t.Logf("Expected=%v", expectedResult)
 			t.Logf("Actual=%v", stringifiedResults)
