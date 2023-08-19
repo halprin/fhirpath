@@ -44,14 +44,24 @@ func TestOfficial(t *testing.T) {
 	err := xml.Unmarshal(officialTestXmlSpec, &officialTests)
 	assert.NoError(t, err)
 
+	failTests := false
+	totalTests := 0
+	passedTests := 0
+
 	for _, group := range officialTests.Groups {
 		for _, test := range group.Tests {
 			testName := fmt.Sprintf("%s/%s", group.Name, test.Name)
+			totalTests++
 			fhir, err := readFhirTestFile(convertXmlFileNameToJsonFileName(test.InputFile))
 			assert.NoError(t, err)
-			t.Run(testName, officialTestTemplate(test.Expression, fhir, test.Outputs))
+			passed := t.Run(testName, officialTestTemplate(test.Expression, fhir, test.Outputs, failTests))
+			if passed {
+				passedTests++
+			}
 		}
 	}
+
+	t.Logf("%d/%d tests pass", passedTests, totalTests)
 }
 
 func convertXmlFileNameToJsonFileName(fileName string) string {
@@ -67,7 +77,7 @@ func readFhirTestFile(fileName string) (string, error) {
 	return string(content), nil
 }
 
-func officialTestTemplate(expression OfficialExpression, fhir string, expectedResult []string) func(*testing.T) {
+func officialTestTemplate(expression OfficialExpression, fhir string, expectedResult []string, fail bool) func(*testing.T) {
 	return func(t *testing.T) {
 
 		//report on any possible panics
@@ -75,6 +85,9 @@ func officialTestTemplate(expression OfficialExpression, fhir string, expectedRe
 			r := recover()
 			if r != nil {
 				t.Logf("Evaluate failed with a panic: %v", r)
+				if fail {
+					t.Fail()
+				}
 			}
 		}()
 
@@ -86,6 +99,9 @@ func officialTestTemplate(expression OfficialExpression, fhir string, expectedRe
 				return
 			}
 			t.Logf("Evaluate failed with an error: %s", err.Error())
+			if fail {
+				t.Fail()
+			}
 			return
 		}
 
@@ -95,6 +111,9 @@ func officialTestTemplate(expression OfficialExpression, fhir string, expectedRe
 			t.Log("Expected results are not equal to actual results")
 			t.Logf("Expected=%v", expectedResult)
 			t.Logf("Actual=%v", stringifiedResults)
+			if fail {
+				t.Fail()
+			}
 			return
 		}
 
@@ -124,6 +143,9 @@ func officialTestTemplate(expression OfficialExpression, fhir string, expectedRe
 			t.Log("Expected results are not equal to actual results")
 			t.Logf("Expected=%v", expectedResult)
 			t.Logf("Actual=%v", stringifiedResults)
+			if fail {
+				t.Fail()
+			}
 		}
 	}
 }
