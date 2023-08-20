@@ -71,3 +71,24 @@ func TestEvaluate_Exists(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Contains(t, result, true)
 }
+
+func TestEvaluate_Exists_False(t *testing.T) {
+	result, err := Evaluate[bool](fhirPatient, "Patient.deceased.exists()")
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, false)
+}
+
+func TestEvaluate_Exists_InnerWhere(t *testing.T) {
+	result, err := Evaluate[bool](fhirPatient, "Patient.name.exists(use = 'official')")
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, true)
+}
+
+func TestEvaluate_Equality_Boolean(t *testing.T) {
+	result, err := Evaluate[bool](fhirPatient, "Patient.name.exists() = true")
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, true)
+}
