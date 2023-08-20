@@ -25,16 +25,22 @@ func (receiver *engine) FunctionInvocation(fhirOptions []map[string]interface{},
 		return nil, errors.New("FunctionInvocation: the function name was not a string")
 	}
 
-	functionParametersInterface := functionConfig[1]
-	functionParameters := functionParametersInterface.([]interface{})
-	if !ok {
-		return nil, errors.New("FunctionInvocation: the function parameters was not a slice")
+	functionParameters := []interface{}{}
+	if len(functionConfig) > 1 {
+		//there are parameters to the function call
+		functionParametersInterface := functionConfig[1]
+		functionParameters = functionParametersInterface.([]interface{})
+		if !ok {
+			return nil, errors.New("FunctionInvocation: the function parameters was not a slice")
+		}
 	}
 
 	//TODO: implement more functions
 	switch functionName {
 	case "where":
 		return where(fhirOptions, functionParameters)
+	case "exists":
+		return exists(fhirOptions, functionParameters)
 	default:
 		return nil, fmt.Errorf("FunctionInvocation: function name %s is unknown", functionName)
 	}
@@ -60,4 +66,21 @@ func where(fhirOptions []map[string]interface{}, parameters []interface{}) ([]ma
 	}
 
 	return filteredFhirOptions, nil
+}
+
+func exists(fhirOptions []map[string]interface{}, parameters []interface{}) ([]interface{}, error) {
+	if len(parameters) > 0 {
+		//there were parameters which is the equivalent of running where first
+		var err error
+		fhirOptions, err = where(fhirOptions, parameters)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if len(fhirOptions) == 0 {
+		return []interface{}{false}, nil
+	}
+
+	return []interface{}{true}, nil
 }

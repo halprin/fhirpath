@@ -64,3 +64,10 @@ func TestEvaluate_Index_AboveSizeBecomesEmptyResult(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, result, 0)
 }
+
+func TestEvaluate_Exists(t *testing.T) {
+	result, err := Evaluate[bool](fhirPatient, "Patient.name.exists()")
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, true)
+}
