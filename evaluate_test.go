@@ -2,6 +2,7 @@ package fhirpath
 
 import (
 	_ "embed"
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -91,4 +92,18 @@ func TestEvaluate_Equality_Boolean(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Contains(t, result, true)
+}
+
+func TestOfficial_testSliceOfBool(t *testing.T) {
+	booleans := []bool{true, false, true}
+	var obfuscatedBooleans interface{}
+	obfuscatedBooleans = booleans
+
+	reflectedSlice := reflect.ValueOf(obfuscatedBooleans)
+
+	for i := 0; i < reflectedSlice.Len(); i++ {
+		t.Log(reflectedSlice.Index(i).Interface())
+	}
+
+
 }

@@ -1,5 +1,9 @@
 package engine
 
+type valueWrapper[T comparable] struct {
+	Value T
+}
+
 // convertInterfaceSliceToFhirOptionSlice converts a generic `[]interface{}` value to a slice of a FHIR option (`map[string]interface{}`)
 // This is needed for some of the type casting in the execution engine.
 func convertInterfaceSliceToFhirOptionSlice(interfaceSlice []interface{}) []map[string]interface{} {

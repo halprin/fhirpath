@@ -68,7 +68,7 @@ func where(fhirOptions []map[string]interface{}, parameters []interface{}) ([]ma
 	return filteredFhirOptions, nil
 }
 
-func exists(fhirOptions []map[string]interface{}, parameters []interface{}) ([]interface{}, error) {
+func exists(fhirOptions []map[string]interface{}, parameters []interface{}) ([]bool, error) {
 	if len(parameters) > 0 {
 		//there were parameters which is the equivalent of running where first
 		var err error
@@ -79,8 +79,8 @@ func exists(fhirOptions []map[string]interface{}, parameters []interface{}) ([]i
 	}
 
 	if len(fhirOptions) == 0 {
-		return []interface{}{false}, nil
+		return []bool{false}, nil
 	}
 
-	return []interface{}{true}, nil
+	return []bool{true}, nil
 }
