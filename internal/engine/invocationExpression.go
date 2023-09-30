@@ -5,7 +5,7 @@ import (
 )
 
 // InvocationExpression is all about evaluating a child tree, and then evaluate the next child tree given any FHIR option results that came from the previous tree evaluation.
-func (receiver *engine) InvocationExpression(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
+func (receiver *engine) InvocationExpression(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
 
 	accumulator := fhirOptions
 	var accumulatorInterface interface{}

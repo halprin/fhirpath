@@ -8,7 +8,7 @@ import (
 )
 
 // MemberInvocation represents filtering based on a segment after a period in the FHIR path.
-func (receiver *engine) MemberInvocation(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
+func (receiver *engine) MemberInvocation(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
 	identifierInterface, err := receiver.Execute(fhirOptions, node.Children()[0])
 	if err != nil {
 		return nil, err

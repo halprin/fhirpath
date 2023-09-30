@@ -7,7 +7,7 @@ import (
 )
 
 // IndexerExpression evaluates the left with all of its options, and then returns a specific one depending on the index.
-func (receiver *engine) IndexerExpression(fhirOptions []map[string]interface{}, node grammar.Tree) ([]interface{}, error) {
+func (receiver *engine) IndexerExpression(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
 	optionsInterface, err := receiver.Execute(fhirOptions, node.Children()[0])
 	if err != nil {
 		return nil, err

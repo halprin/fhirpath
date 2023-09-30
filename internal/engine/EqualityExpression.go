@@ -7,7 +7,7 @@ import (
 )
 
 // EqualityExpression evaluates each child node against each FHIR option.  It then does the operation (equaliity, equivalent, not) between the right and the left, for each FHIR option.  This slice of boolean values is returned.
-func (receiver *engine) EqualityExpression(fhirOptions []map[string]interface{}, node grammar.Tree) ([]bool, error) {
+func (receiver *engine) EqualityExpression(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
 	//evaluate each operand against each FHIR option
 
 	leftOperands := receiver.populateOperands(fhirOptions, node.Children()[0])

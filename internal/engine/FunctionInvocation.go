@@ -8,7 +8,7 @@ import (
 )
 
 // FunctionInvocation evaluates the children and then executes the logic behind the function.
-func (receiver *engine) FunctionInvocation(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
+func (receiver *engine) FunctionInvocation(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
 	functionInterface, err := receiver.Execute(fhirOptions, node.Children()[0])
 	if err != nil {
 		return nil, err
