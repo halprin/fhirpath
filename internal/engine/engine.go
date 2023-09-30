@@ -23,7 +23,7 @@ func Execute[T any](fhir map[string]interface{}, fhirPathTree grammar.Tree) ([]T
 //		return nil, fmt.Errorf("the result of FHIRPath (value=%v, type=%v) cannot be cast into the []interface{} type", result, reflect.TypeOf(result))
 //	}
 
-	concreteTypeResult, err := asdf[T](result)
+	concreteTypeResult, err := asdf[T](result.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ type engine struct {
 }
 
 // Execute dynamicly calls the engine's method that matches the rule of the current grammar.Tree.
-func (receiver *engine) Execute(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
+func (receiver *engine) Execute(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
 
 	engineReflect := reflect.ValueOf(receiver)
 
@@ -89,10 +89,15 @@ func (receiver *engine) Execute(fhirOptions []map[string]interface{}, node gramm
 		return nil, errors.New("engine method " + node.Rule() + " doesn't return two values")
 	}
 
+	valueFirstReturn, ok := results[0].Interface().(*DynamicValue)
+	if !results[0].IsNil() && !ok {
+		return nil, errors.New("engine method " + node.Rule() + " second return value is not an DynamicValue pointer type")
+	}
+
 	errorSecondReturn, ok := results[1].Interface().(error)
 	if !results[1].IsNil() && !ok {
 		return nil, errors.New("engine method " + node.Rule() + " second return value is not an error type")
 	}
 
-	return results[0].Interface(), errorSecondReturn
+	return valueFirstReturn, errorSecondReturn
 }

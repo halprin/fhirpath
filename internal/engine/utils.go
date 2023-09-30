@@ -1,7 +1,15 @@
 package engine
 
-type valueWrapper[T comparable] struct {
-	Value T
+type DynamicValue struct {
+	Value interface{}
+}
+
+func NewDynamicValue(value interface{}) *DynamicValue {
+	return &DynamicValue{Value: value}
+}
+
+func (receiver *DynamicValue) IsSlice() bool {
+	return true
 }
 
 // convertInterfaceSliceToFhirOptionSlice converts a generic `[]interface{}` value to a slice of a FHIR option (`map[string]interface{}`)
