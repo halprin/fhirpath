@@ -20,7 +20,7 @@ func Execute[T any](fhir map[string]interface{}, fhirPathTree grammar.Tree) ([]T
 
 	castResult, ok := result.Value.([]interface{})
 	if !ok {
-		return nil, fmt.Errorf("the result of FHIRPath (value=%v, type=%v) cannot be cast into the []interface{} type", result, reflect.TypeOf(result))
+		return nil, fmt.Errorf("the result of FHIRPath (value=%v, type=%v) cannot be cast into the []interface{} type", result.Value, reflect.TypeOf(result.Value))
 	}
 
 	concreteTypeResult, err := filterOutNonRequestedTypes[T](castResult)

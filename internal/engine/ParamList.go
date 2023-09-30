@@ -9,12 +9,12 @@ func (receiver *engine) ParamList(fhirOptions []map[string]interface{}, node gra
 	var parameters []interface{}
 
 	for _, childNode := range node.Children() {
-		value, err := receiver.Execute(fhirOptions, childNode)
+		valueDynamicValue, err := receiver.Execute(fhirOptions, childNode)
 		if err != nil {
 			return nil, err
 		}
 
-		parameters = append(parameters, value)
+		parameters = append(parameters, valueDynamicValue.Value)
 	}
 
 	return NewDynamicValue(parameters), nil

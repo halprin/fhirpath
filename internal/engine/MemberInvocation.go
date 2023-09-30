@@ -9,22 +9,22 @@ import (
 
 // MemberInvocation represents filtering based on a segment after a period in the FHIR path.
 func (receiver *engine) MemberInvocation(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
-	identifierInterface, err := receiver.Execute(fhirOptions, node.Children()[0])
+	identifierDynamicValue, err := receiver.Execute(fhirOptions, node.Children()[0])
 	if err != nil {
 		return nil, err
 	}
 
-	identifier := identifierInterface.(string)
+	identifier := identifierDynamicValue.Value.(string)
 
 	firstCharacter, _ := utf8.DecodeRuneInString(identifier)
 	if unicode.IsUpper(firstCharacter) {
 		//wants to filter on a specific resource type.  I.e. 'Patient'.  This is specific to the "resourceType" field.
-		return filterResourceType(fhirOptions, identifier), nil
+		return NewDynamicValue(filterResourceType(fhirOptions, identifier)), nil
 	}
 
 	//a filter on some generic field.  I.e. gender.
 
-	return filterAndMap(fhirOptions, identifier), nil
+	return NewDynamicValue(filterAndMap(fhirOptions, identifier)), nil
 }
 
 func filterResourceType(fhirOptions []map[string]interface{}, identifier string) []map[string]interface{} {
