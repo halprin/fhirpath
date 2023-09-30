@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/antlr4-go/antlr/v4 v4.13.0
-	github.com/halprin/rangechain v1.0.0
 	github.com/stretchr/testify v1.8.4
 )
 
