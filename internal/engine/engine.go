@@ -3,6 +3,7 @@ package engine
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	"github.com/halprin/fhirpath/internal/grammar"
@@ -17,36 +18,17 @@ func Execute[T any](fhir map[string]interface{}, fhirPathTree grammar.Tree) ([]T
 		return nil, err
 	}
 
-//	castResult, ok := result.([]interface{})
-//	if !ok {
-//		return nil, fmt.Errorf("the result of FHIRPath (value=%v, type=%v) cannot be cast into the []interface{} type", result, reflect.TypeOf(result))
-//	}
+	castResult, ok := result.Value.([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("the result of FHIRPath (value=%v, type=%v) cannot be cast into the []interface{} type", result, reflect.TypeOf(result))
+	}
 
-	concreteTypeResult, err := asdf[T](result.Value)
+	concreteTypeResult, err := filterOutNonRequestedTypes[T](castResult)
 	if err != nil {
 		return nil, err
 	}
 
 	return concreteTypeResult, nil
-}
-
-func asdf[T any](interfaceSlice interface{}) ([]T, error) {
-	filteredInterfaceSlice, err := rangechain.FromSlice(interfaceSlice).Filter(func(currentInterface interface{}) (bool, error) {
-		_, ok := currentInterface.(T)
-		return ok, nil
-	}).Slice()
-
-	if err != nil {
-		return nil, err
-	}
-
-	filteredRealValues := make([]T, 0, len(filteredInterfaceSlice))
-	for _, filteredInterface := range filteredInterfaceSlice {
-		realType := filteredInterface.(T)
-		filteredRealValues = append(filteredRealValues, realType)
-	}
-
-	return filteredRealValues, nil
 }
 
 // filterOutNonRequestedTypes removes value from the input slice that doesn't match the type specified in the type parameter.
