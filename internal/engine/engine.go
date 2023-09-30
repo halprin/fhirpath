@@ -6,7 +6,6 @@ import (
 	"reflect"
 
 	"github.com/halprin/fhirpath/internal/grammar"
-	"github.com/halprin/rangechain"
 )
 
 // Execute starts the evaluation of the grammar.Tree given the FHIR object.
@@ -52,18 +51,13 @@ func asdf[T any](interfaceSlice interface{}) ([]T, error) {
 
 // filterOutNonRequestedTypes removes value from the input slice that doesn't match the type specified in the type parameter.
 func filterOutNonRequestedTypes[T any](interfaceSlice []interface{}) ([]T, error) {
-	filteredInterfaceSlice, err := rangechain.FromSlice(interfaceSlice).Filter(func(currentInterface interface{}) (bool, error) {
-		_, ok := currentInterface.(T)
-		return ok, nil
-	}).Slice()
+	var filteredRealValues []T
 
-	if err != nil {
-		return nil, err
-	}
-
-	filteredRealValues := make([]T, 0, len(filteredInterfaceSlice))
-	for _, filteredInterface := range filteredInterfaceSlice {
-		realType := filteredInterface.(T)
+	for _, currentInterface := range interfaceSlice {
+		realType, ok := currentInterface.(T)
+		if !ok {
+			continue
+		}
 		filteredRealValues = append(filteredRealValues, realType)
 	}
 
