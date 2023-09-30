@@ -6,6 +6,8 @@ import (
 	"reflect"
 )
 
+var valueOfFhirOption = reflect.TypeOf([]map[string]interface{}{})
+
 type DynamicValue struct {
 	Value   interface{}
 	typeOf  reflect.Type
@@ -54,4 +56,9 @@ func (receiver *DynamicValue) SliceValueAtIndex(index int) (interface{}, error) 
 	}
 
 	return receiver.valueOf.Index(index).Interface(), nil
+}
+
+func (receiver *DynamicValue) IsSliceOfFhirOptions() bool {
+	//is the value a []map[string]interface{}?
+	return receiver.typeOf == valueOfFhirOption
 }

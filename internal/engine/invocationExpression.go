@@ -8,12 +8,12 @@ import (
 func (receiver *engine) InvocationExpression(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
 
 	accumulator := fhirOptions
-	var accumulatorInterface interface{}
+	var accumulatorDynamicValue *DynamicValue
 	var err error
 	ok := false
 
 	for index, currentChild := range node.Children() {
-		accumulatorInterface, err = receiver.Execute(accumulator, currentChild)
+		accumulatorDynamicValue, err = receiver.Execute(accumulator, currentChild)
 		if err != nil {
 			return nil, err
 		}
@@ -24,13 +24,13 @@ func (receiver *engine) InvocationExpression(fhirOptions []map[string]interface{
 			break
 		}
 
-		accumulator, ok = accumulatorInterface.([]map[string]interface{})
+		accumulator, ok = accumulatorDynamicValue.Value.([]map[string]interface{})
 		if !ok {
 			//it may still be a slice of FHIR options but hidden behind some stupid Go typing hiding
-			interfaceSlice := accumulatorInterface.([]interface{})
+			interfaceSlice := accumulatorDynamicValue.Value.([]interface{})
 			accumulator = convertInterfaceSliceToFhirOptionSlice(interfaceSlice)
 		}
 	}
 
-	return accumulatorInterface, nil
+	return accumulatorDynamicValue, nil
 }
