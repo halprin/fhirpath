@@ -14,8 +14,8 @@ func (receiver *engine) Function(fhirOptions []map[string]interface{}, node gram
 			return nil, err
 		}
 
-		functionNameAndParams = append(functionNameAndParams, value)
+		functionNameAndParams = append(functionNameAndParams, value.Value)
 	}
 
-	return functionNameAndParams, nil
+	return NewDynamicValue(functionNameAndParams), nil
 }
