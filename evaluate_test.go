@@ -2,6 +2,7 @@ package fhirpath
 
 import (
 	_ "embed"
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -63,4 +64,46 @@ func TestEvaluate_Index_AboveSizeBecomesEmptyResult(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Len(t, result, 0)
+}
+
+func TestEvaluate_Exists(t *testing.T) {
+	result, err := Evaluate[bool](fhirPatient, "Patient.name.exists()")
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, true)
+}
+
+func TestEvaluate_Exists_False(t *testing.T) {
+	result, err := Evaluate[bool](fhirPatient, "Patient.deceased.exists()")
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, false)
+}
+
+func TestEvaluate_Exists_InnerWhere(t *testing.T) {
+	result, err := Evaluate[bool](fhirPatient, "Patient.name.exists(use = 'official')")
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, true)
+}
+
+func TestEvaluate_Equality_Boolean(t *testing.T) {
+	result, err := Evaluate[bool](fhirPatient, "Patient.name.exists() = true")
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, true)
+}
+
+func TestOfficial_testSliceOfBool(t *testing.T) {
+	booleans := []bool{true, false, true}
+	var obfuscatedBooleans interface{}
+	obfuscatedBooleans = booleans
+
+	reflectedSlice := reflect.ValueOf(obfuscatedBooleans)
+
+	for i := 0; i < reflectedSlice.Len(); i++ {
+		t.Log(reflectedSlice.Index(i).Interface())
+	}
+
+
 }

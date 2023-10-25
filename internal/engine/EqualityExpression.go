@@ -7,7 +7,7 @@ import (
 )
 
 // EqualityExpression evaluates each child node against each FHIR option.  It then does the operation (equaliity, equivalent, not) between the right and the left, for each FHIR option.  This slice of boolean values is returned.
-func (receiver *engine) EqualityExpression(fhirOptions []map[string]interface{}, node grammar.Tree) ([]bool, error) {
+func (receiver *engine) EqualityExpression(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
 	//evaluate each operand against each FHIR option
 
 	leftOperands := receiver.populateOperands(fhirOptions, node.Children()[0])
@@ -36,7 +36,7 @@ func (receiver *engine) populateOperands(fhirOptions []map[string]interface{}, n
 			return nil
 		}
 
-		operandValues = append(operandValues, leftOperand)
+		operandValues = append(operandValues, leftOperand.Value)
 	}
 
 	operandValues = flatten(operandValues)
@@ -44,14 +44,14 @@ func (receiver *engine) populateOperands(fhirOptions []map[string]interface{}, n
 	return operandValues
 }
 
-func compareSlices(fhirOptions []map[string]interface{}, leftOperands []interface{}, rightOperands []interface{}, comparisonFunction func(interface{}, interface{}) bool) ([]bool, error) {
+func compareSlices(fhirOptions []map[string]interface{}, leftOperands []interface{}, rightOperands []interface{}, comparisonFunction func(interface{}, interface{}) bool) (*DynamicValue, error) {
 	comparisonSlice := make([]bool, len(fhirOptions))
 
 	for index, _ := range fhirOptions {
 		comparisonSlice[index] = comparisonFunction(leftOperands[index], rightOperands[index])
 	}
 
-	return comparisonSlice, nil
+	return NewDynamicValue(comparisonSlice), nil
 }
 
 func equals(leftOperand interface{}, rightOperand interface{}) bool {

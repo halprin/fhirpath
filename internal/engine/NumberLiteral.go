@@ -8,13 +8,23 @@ import (
 )
 
 // NumberLiteral converts the text to either a float64 (if the number is a decimal) or an int (if the number isn't a decimal).
-func (receiver *engine) NumberLiteral(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
+func (receiver *engine) NumberLiteral(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
 	literal := node.Text()
 
 	if strings.ContainsRune(literal, '.') {
 		//this is a decimal number
-		return strconv.ParseFloat(literal, 64)
+		number, err := strconv.ParseFloat(literal, 64)
+		if err != nil {
+			return nil, err
+		}
+
+		return NewDynamicValue(number), nil
 	}
 
-	return strconv.Atoi(literal)
+	number, err := strconv.Atoi(literal)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewDynamicValue(number), nil
 }

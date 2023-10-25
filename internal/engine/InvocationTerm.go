@@ -5,6 +5,6 @@ import (
 )
 
 // InvocationTerm just evaluates the singular child tree.
-func (receiver *engine) InvocationTerm(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
+func (receiver *engine) InvocationTerm(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
 	return receiver.Execute(fhirOptions, node.Children()[0])
 }

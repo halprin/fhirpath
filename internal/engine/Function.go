@@ -5,7 +5,7 @@ import (
 )
 
 // Function evaluates its children and returns their results in turn.
-func (receiver *engine) Function(fhirOptions []map[string]interface{}, node grammar.Tree) ([]interface{}, error) {
+func (receiver *engine) Function(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
 	var functionNameAndParams []interface{}
 
 	for _, childNode := range node.Children() {
@@ -14,8 +14,8 @@ func (receiver *engine) Function(fhirOptions []map[string]interface{}, node gram
 			return nil, err
 		}
 
-		functionNameAndParams = append(functionNameAndParams, value)
+		functionNameAndParams = append(functionNameAndParams, value.Value)
 	}
 
-	return functionNameAndParams, nil
+	return NewDynamicValue(functionNameAndParams), nil
 }

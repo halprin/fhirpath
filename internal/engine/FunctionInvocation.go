@@ -8,33 +8,40 @@ import (
 )
 
 // FunctionInvocation evaluates the children and then executes the logic behind the function.
-func (receiver *engine) FunctionInvocation(fhirOptions []map[string]interface{}, node grammar.Tree) (interface{}, error) {
-	functionInterface, err := receiver.Execute(fhirOptions, node.Children()[0])
+func (receiver *engine) FunctionInvocation(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
+	functionDynamicValue, err := receiver.Execute(fhirOptions, node.Children()[0])
 	if err != nil {
 		return nil, err
 	}
 
-	functionConfig, ok := functionInterface.([]interface{})
-	if !ok {
-		return nil, errors.New("FunctionInvocation: the function configuration was not a slice")
+	functionName, err := CastSliceValueAtIndexOfDynamicValue[string](functionDynamicValue, 0)
+	if err != nil {
+		return nil, errors.Join(errors.New("FunctionInvocation: function name failure"), err)
 	}
 
-	functionNameInterface := functionConfig[0]
-	functionName, ok := functionNameInterface.(string)
-	if !ok {
-		return nil, errors.New("FunctionInvocation: the function name was not a string")
+	functionParameters := []interface{}{}
+
+	functionConfigSize, err := functionDynamicValue.SliceSize()
+	if err != nil {
+		return nil, errors.Join(errors.New("FunctionInvocation: function parameters failure"), err)
 	}
 
-	functionParametersInterface := functionConfig[1]
-	functionParameters := functionParametersInterface.([]interface{})
-	if !ok {
-		return nil, errors.New("FunctionInvocation: the function parameters was not a slice")
+	if functionConfigSize > 1 {
+		//there are parameters to the function call
+		functionParameters, err = CastSliceValueAtIndexOfDynamicValue[[]interface{}](functionDynamicValue, 1)
+		if err != nil {
+			return nil, errors.Join(errors.New("FunctionInvocation: function parameters failure"), err)
+		}
 	}
 
 	//TODO: implement more functions
 	switch functionName {
 	case "where":
-		return where(fhirOptions, functionParameters)
+		newFhirOptions, err := where(fhirOptions, functionParameters)
+		return NewDynamicValue(newFhirOptions), err
+	case "exists":
+		bools, err := exists(fhirOptions, functionParameters)
+		return NewDynamicValue(bools), err
 	default:
 		return nil, fmt.Errorf("FunctionInvocation: function name %s is unknown", functionName)
 	}
@@ -60,4 +67,21 @@ func where(fhirOptions []map[string]interface{}, parameters []interface{}) ([]ma
 	}
 
 	return filteredFhirOptions, nil
+}
+
+func exists(fhirOptions []map[string]interface{}, parameters []interface{}) ([]bool, error) {
+	if len(parameters) > 0 {
+		//there were parameters which is the equivalent of running where first
+		var err error
+		fhirOptions, err = where(fhirOptions, parameters)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if len(fhirOptions) == 0 {
+		return []bool{false}, nil
+	}
+
+	return []bool{true}, nil
 }

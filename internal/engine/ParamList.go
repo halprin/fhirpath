@@ -5,17 +5,17 @@ import (
 )
 
 // ParamList evaluates the children trees in turn and returns the results in turn.
-func (receiver *engine) ParamList(fhirOptions []map[string]interface{}, node grammar.Tree) ([]interface{}, error) {
+func (receiver *engine) ParamList(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
 	var parameters []interface{}
 
 	for _, childNode := range node.Children() {
-		value, err := receiver.Execute(fhirOptions, childNode)
+		valueDynamicValue, err := receiver.Execute(fhirOptions, childNode)
 		if err != nil {
 			return nil, err
 		}
 
-		parameters = append(parameters, value)
+		parameters = append(parameters, valueDynamicValue.Value)
 	}
 
-	return parameters, nil
+	return NewDynamicValue(parameters), nil
 }
