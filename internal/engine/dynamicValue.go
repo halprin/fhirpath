@@ -38,6 +38,32 @@ func CastSliceValueAtIndexOfDynamicValue[T any](value *DynamicValue, index int) 
 	return realValue, nil
 }
 
+func CastAndFilterSliceOfDynamicValue[T any](value *DynamicValue) ([]T, error) {
+
+	sliceSize, err := value.SliceSize()
+	if err != nil {
+		return nil, err
+	}
+
+	var filteredValues []T
+
+	for sliceIndex := 0; sliceIndex < sliceSize; sliceIndex++ {
+		currentInterface, err := value.SliceValueAtIndex(sliceIndex)
+		if err != nil {
+			return nil, err
+		}
+
+		realType, ok := currentInterface.(T)
+		if !ok {
+			continue
+		}
+
+		filteredValues = append(filteredValues, realType)
+	}
+
+	return filteredValues, nil
+}
+
 func (receiver *DynamicValue) IsSlice() bool {
 	return receiver.typeOf.Kind() == reflect.Slice
 }
