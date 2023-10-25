@@ -25,25 +25,10 @@ func Execute[T any](fhir map[string]interface{}, fhirPathTree grammar.Tree) ([]T
 	return concreteTypeResult, nil
 }
 
-// filterOutNonRequestedTypes removes value from the input slice that doesn't match the type specified in the type parameter.
-func filterOutNonRequestedTypes[T any](interfaceSlice []interface{}) ([]T, error) {
-	var filteredRealValues []T
-
-	for _, currentInterface := range interfaceSlice {
-		realType, ok := currentInterface.(T)
-		if !ok {
-			continue
-		}
-		filteredRealValues = append(filteredRealValues, realType)
-	}
-
-	return filteredRealValues, nil
-}
-
 type engine struct {
 }
 
-// Execute dynamicly calls the engine's method that matches the rule of the current grammar.Tree.
+// Execute dynamically calls the engine's method that matches the rule of the current grammar.Tree.
 func (receiver *engine) Execute(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
 
 	engineReflect := reflect.ValueOf(receiver)
