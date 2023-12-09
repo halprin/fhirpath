@@ -16,6 +16,8 @@ func Evaluate[T any](fhirString string, fhirPath string) ([]T, error) {
 		return nil, err
 	}
 
+	fhir = convertFhirNumbers(fhir)
+
 	tree, err := grammar.CreateTree(fhirPath)
 	if err != nil {
 		return nil, err
@@ -38,4 +40,42 @@ func unmarshalFhir(fhir string) (map[string]interface{}, error) {
 	}
 
 	return fhirObject, nil
+}
+
+// convertFhirNumbers is a recursive function that converts numbers in the FHIR JSON
+// from float64 to int if they are actually integers.
+// The function takes a map[string]interface{} as input representing the FHIR JSON.
+//
+// The function iterates over each key-value pair in the map and calls the helper function
+// convertFhirNumbersRecursive to convert any numbers to their corresponding int values.
+//
+// After iterating through all key-value pairs, the function returns the updated FHIR JSON map.
+func convertFhirNumbers(fhir map[string]interface{}) map[string]interface{} {
+	for currentKey, currentValue := range fhir {
+		fhir[currentKey] = convertFhirNumbersRecursive(currentValue)
+	}
+
+	return fhir
+}
+
+func convertFhirNumbersRecursive(value interface{}) interface{} {
+	switch v := value.(type) {
+	case float64:
+		// Convert float64 to int if it's really an int
+		if float64(int(v)) == v {
+			return int(v)
+		}
+		return v
+	case map[string]interface{}:
+		// Process map values
+		for currentKey, currentValue := range v {
+			v[currentKey] = convertFhirNumbersRecursive(currentValue)
+		}
+	case []interface{}:
+		// Process slice values
+		for currentIndex, currentValue := range v {
+			v[currentIndex] = convertFhirNumbersRecursive(currentValue)
+		}
+	}
+	return value
 }
