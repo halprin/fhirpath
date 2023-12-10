@@ -95,16 +95,13 @@ func TestEvaluate_Equality_Boolean(t *testing.T) {
 }
 
 func TestEvaluate_Polymorphism_Exact(t *testing.T) {
-	//TODO: this test fails because we construct an `int` for the `1`, but Go unmarshals the `1` in
-	//TODO: `multipleBirthInteger` as a `float64`.  The answer is probably to update `NumberLiteral` to always construct
-	//TODO: a `float64` regardless of whether there is a `.`.
 	result, err := Evaluate[bool](fhirPatient, "Patient.multipleBirthInteger = 1")
 
 	assert.NoError(t, err)
 	assert.Contains(t, result, true)
 }
 
-func TestEvaluate_Polymorphism_Inprecise(t *testing.T) {
+func TestEvaluate_Polymorphism_Imprecise(t *testing.T) {
 	result, err := Evaluate[bool](fhirPatient, "Patient.multipleBirth = 1")
 
 	assert.NoError(t, err)
