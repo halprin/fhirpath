@@ -25,11 +25,46 @@ type FieldTypes struct {
 //go:embed R5.json
 var r5json string
 
+//go:embed R4B.json
+var r4bjson string
+
+//go:embed R4.json
+var r4json string
+
+//go:embed STU3.json
+var stu3json string
+
+//go:embed DSTU2.json
+var dstu2json string
+
 var r5 Definition
+var r4b Definition
+var r4 Definition
+var stu3 Definition
+var dstu2 Definition
 
 func init() {
-	var definition Definition
-	err := json.Unmarshal([]byte(r5json), &definition)
+	err := json.Unmarshal([]byte(r5json), &r5)
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal([]byte(r4bjson), &r4b)
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal([]byte(r4json), &r4)
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal([]byte(stu3json), &stu3)
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal([]byte(dstu2json), &dstu2)
 	if err != nil {
 		panic(err)
 	}
@@ -37,4 +72,20 @@ func init() {
 
 func R5() Definition {
 	return r5
+}
+
+func R4B() Definition {
+	return r4b
+}
+
+func R4() Definition {
+	return r4
+}
+
+func STU3() Definition {
+	return stu3
+}
+
+func DSTU2() Definition {
+	return dstu2
 }
