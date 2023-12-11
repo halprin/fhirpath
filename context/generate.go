@@ -64,20 +64,26 @@ func constructTypesForFhirVersion(fhirVersion string) error {
 
 	log.Printf("Converting structure definitions to our definitions for FHIR version %s\n", fhirVersion)
 
-	types := context.Definition{Version: fhirVersion}
+	types := context.Definition{
+		Version:   fhirVersion,
+		Resources: map[string]context.ResourceTypeDefinition{},
+	}
 
 	for _, resourceDefinition := range resourceDefinitions {
-		resource := context.ResourceTypeDefinition{Name: resourceDefinition.Name}
+		resource := context.ResourceTypeDefinition{
+			Name:   resourceDefinition.Name,
+			Fields: map[string]context.FieldTypes{},
+		}
 
 		for _, elem := range resourceDefinition.Snapshot.Element {
 			field := context.FieldTypes{Name: elem.Path}
 			for _, currentType := range elem.Type {
 				field.Types = append(field.Types, currentType.Code)
 			}
-			resource.Fields = append(resource.Fields, field)
+			resource.Fields[field.Name] = field
 		}
 
-		types.Resources = append(types.Resources, resource)
+		types.Resources[resource.Name] = resource
 	}
 
 	log.Printf("Marshalling our definitions into JSON for FHIR version %s\n", fhirVersion)

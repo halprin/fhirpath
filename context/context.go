@@ -8,13 +8,13 @@ import (
 //go:generate go run generate.go
 
 type Definition struct {
-	Version   string                   `json:"version"`
-	Resources []ResourceTypeDefinition `json:"resources"`
+	Version   string                            `json:"version"`
+	Resources map[string]ResourceTypeDefinition `json:"resources"`
 }
 
 type ResourceTypeDefinition struct {
 	Name   string `json:"name"`
-	Fields []FieldTypes
+	Fields map[string]FieldTypes
 }
 
 type FieldTypes struct {
@@ -44,9 +44,18 @@ var stu3 Definition
 var dstu2 Definition
 
 func init() {
+
+	if len(r5json) == 0 {
+		return
+	}
+
 	err := json.Unmarshal([]byte(r5json), &r5)
 	if err != nil {
 		panic(err)
+	}
+
+	if len(r4bjson) == 0 {
+		return
 	}
 
 	err = json.Unmarshal([]byte(r4bjson), &r4b)
@@ -54,14 +63,26 @@ func init() {
 		panic(err)
 	}
 
+	if len(r4json) == 0 {
+		return
+	}
+
 	err = json.Unmarshal([]byte(r4json), &r4)
 	if err != nil {
 		panic(err)
 	}
 
+	if len(stu3json) == 0 {
+		return
+	}
+
 	err = json.Unmarshal([]byte(stu3json), &stu3)
 	if err != nil {
 		panic(err)
+	}
+
+	if len(dstu2json) == 0 {
+		return
 	}
 
 	err = json.Unmarshal([]byte(dstu2json), &dstu2)
