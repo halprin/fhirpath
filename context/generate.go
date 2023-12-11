@@ -1,13 +1,16 @@
-package fhirpath
+//go:build ignore
+
+package main
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/halprin/fhirpath/context"
 	"golang.org/x/net/html"
 	"io"
 	"log"
 	"net/http"
-	"testing"
+	"os"
 )
 
 type structureDefinition struct {
@@ -22,20 +25,20 @@ type structureDefinition struct {
 	} `json:"snapshot"`
 }
 
-func TestTypeBuilding(t *testing.T) {
+func main() {
 
 	fhirVersions := []string{
 		"R5",
-		//"R4B",
-		//"R4",
-		//"STU3",
-		//"DSTU2",
+		"R4B",
+		"R4",
+		"STU3",
+		"DSTU2",
 	}
 
 	for _, version := range fhirVersions {
 		err := constructTypesForFhirVersion(version)
 		if err != nil {
-			t.Error(err)
+			log.Fatalf("Error occured during construction of context definitions: %s", err.Error())
 		}
 	}
 }
@@ -48,18 +51,49 @@ func constructTypesForFhirVersion(fhirVersion string) error {
 		return err
 	}
 
+	resourceDefinitions := make([]structureDefinition, 0, len(resources))
+
 	for _, resource := range resources {
 		resourceDefinition, err := fetchStructureDefinition(fhirVersion, resource)
 		if err != nil {
 			return err
 		}
 
+		resourceDefinitions = append(resourceDefinitions, resourceDefinition)
+	}
+
+	log.Printf("Converting structure definitions to our definitions for FHIR version %s\n", fhirVersion)
+
+	types := context.Definition{Version: fhirVersion}
+
+	for _, resourceDefinition := range resourceDefinitions {
+		resource := context.ResourceTypeDefinition{Name: resourceDefinition.Name}
+
 		for _, elem := range resourceDefinition.Snapshot.Element {
-			fmt.Printf("%s %s types =\n", fhirVersion, elem.Path)
+			field := context.FieldTypes{Name: elem.Path}
 			for _, currentType := range elem.Type {
-				fmt.Printf("\t%s\n", currentType.Code)
+				field.Types = append(field.Types, currentType.Code)
 			}
+			resource.Fields = append(resource.Fields, field)
 		}
+
+		types.Resources = append(types.Resources, resource)
+	}
+
+	log.Printf("Marshalling our definitions into JSON for FHIR version %s\n", fhirVersion)
+
+	jsonData, err := json.Marshal(types)
+	if err != nil {
+		return err
+	}
+
+	path := fmt.Sprintf("%s.json", fhirVersion)
+
+	log.Printf("Writing JSON data to file %s for FHIR version %s\n", path, fhirVersion)
+
+	err = os.WriteFile(path, jsonData, 0644)
+	if err != nil {
+		return err
 	}
 
 	return nil
