@@ -2,6 +2,7 @@ package fhirpath
 
 import (
 	"encoding/json"
+	"github.com/halprin/fhirpath/context"
 	"github.com/halprin/fhirpath/internal/engine"
 	"github.com/halprin/fhirpath/internal/grammar"
 )
@@ -11,6 +12,10 @@ import (
 // This function is a generic function, so it takes a type parameter.  Upon evaluation, any results that are not the same as the type parameter are filtered out.  If you want nothing filtered out, use `any` as the type paramter.
 func Evaluate[T any](fhirString string, fhirPath string) ([]T, error) {
 
+	return EvaluateWithContext[T](fhirString, fhirPath, context.Definition{})
+}
+
+func EvaluateWithContext[T any](fhirString string, fhirPath string, context context.Definition) ([]T, error) {
 	fhir, err := unmarshalFhir(fhirString)
 	if err != nil {
 		return nil, err
@@ -23,7 +28,7 @@ func Evaluate[T any](fhirString string, fhirPath string) ([]T, error) {
 		return nil, err
 	}
 
-	result, err := engine.Execute[T](fhir, tree)
+	result, err := engine.Execute[T](fhir, tree, context)
 	if err != nil {
 		return nil, err
 	}

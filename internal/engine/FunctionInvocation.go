@@ -3,13 +3,14 @@ package engine
 import (
 	"errors"
 	"fmt"
+	"github.com/halprin/fhirpath/context"
 
 	"github.com/halprin/fhirpath/internal/grammar"
 )
 
 // FunctionInvocation evaluates the children and then executes the logic behind the function.
-func (receiver *engine) FunctionInvocation(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
-	functionDynamicValue, err := receiver.Execute(fhirOptions, node.Children()[0])
+func (receiver *engine) FunctionInvocation(fhirOptions []map[string]interface{}, node grammar.Tree, context context.Definition) (*DynamicValue, error) {
+	functionDynamicValue, err := receiver.Execute(fhirOptions, node.Children()[0], context)
 	if err != nil {
 		return nil, err
 	}

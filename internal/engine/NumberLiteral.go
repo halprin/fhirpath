@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"github.com/halprin/fhirpath/context"
 	"strconv"
 	"strings"
 
@@ -8,7 +9,7 @@ import (
 )
 
 // NumberLiteral converts the text to either a float64 (if the number is a decimal) or an int (if the number isn't a decimal).
-func (receiver *engine) NumberLiteral(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
+func (receiver *engine) NumberLiteral(fhirOptions []map[string]interface{}, node grammar.Tree, context context.Definition) (*DynamicValue, error) {
 	literal := node.Text()
 
 	if strings.ContainsRune(literal, '.') {

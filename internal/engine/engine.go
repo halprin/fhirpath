@@ -3,6 +3,7 @@ package engine
 
 import (
 	"errors"
+	"github.com/halprin/fhirpath/context"
 	"reflect"
 
 	"github.com/halprin/fhirpath/internal/grammar"
@@ -10,9 +11,9 @@ import (
 
 // Execute starts the evaluation of the grammar.Tree given the FHIR object.
 // It also filters out types that don't match the type parameter.
-func Execute[T any](fhir map[string]interface{}, fhirPathTree grammar.Tree) ([]T, error) {
+func Execute[T any](fhir map[string]interface{}, fhirPathTree grammar.Tree, context context.Definition) ([]T, error) {
 	fhirOptions := []map[string]interface{}{fhir}
-	result, err := (&engine{}).Execute(fhirOptions, fhirPathTree)
+	result, err := (&engine{}).Execute(fhirOptions, fhirPathTree, context)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +30,7 @@ type engine struct {
 }
 
 // Execute dynamically calls the engine's method that matches the rule of the current grammar.Tree.
-func (receiver *engine) Execute(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
+func (receiver *engine) Execute(fhirOptions []map[string]interface{}, node grammar.Tree, context context.Definition) (*DynamicValue, error) {
 
 	engineReflect := reflect.ValueOf(receiver)
 
@@ -38,7 +39,7 @@ func (receiver *engine) Execute(fhirOptions []map[string]interface{}, node gramm
 		return nil, errors.New("engine method " + node.Rule() + " doesn't exist")
 	}
 
-	methodArguments := []reflect.Value{reflect.ValueOf(fhirOptions), reflect.ValueOf(node)}
+	methodArguments := []reflect.Value{reflect.ValueOf(fhirOptions), reflect.ValueOf(node), reflect.ValueOf(context)}
 	results := engineMethod.Call(methodArguments)
 	if len(results) != 2 {
 		return nil, errors.New("engine method " + node.Rule() + " doesn't return two values")
