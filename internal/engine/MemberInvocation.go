@@ -2,6 +2,8 @@ package engine
 
 import (
 	"github.com/halprin/fhirpath/context"
+	"log"
+	"strings"
 	"unicode"
 	"unicode/utf8"
 
@@ -25,7 +27,7 @@ func (receiver *engine) MemberInvocation(fhirOptions []map[string]interface{}, n
 
 	//a filter on some generic field.  I.e. gender.
 
-	return NewDynamicValue(filterAndMap(fhirOptions, identifier)), nil
+	return NewDynamicValue(filterAndMap(fhirOptions, identifier, context)), nil
 }
 
 func filterResourceType(fhirOptions []map[string]interface{}, identifier string) []map[string]interface{} {
@@ -40,13 +42,43 @@ func filterResourceType(fhirOptions []map[string]interface{}, identifier string)
 	return filteredFhirOptions
 }
 
-func filterAndMap(fhirOptions []map[string]interface{}, identifier string) []interface{} {
+func filterAndMap(fhirOptions []map[string]interface{}, identifier string, context context.Definition) []interface{} {
 	var filteredOptions []interface{}
 
 	for _, currentFhirOption := range fhirOptions {
 		value, ok := currentFhirOption[identifier]
 		if ok {
 			filteredOptions = append(filteredOptions, value)
+		} else {
+			originalSizeOfFilteredOptions := len(filteredOptions)
+			for _, resource := range context.Resources {
+				for _, field := range resource.Fields {
+					endOfFieldName := field.Name[len(field.Name)-3:]
+					if endOfFieldName != "[x]" {
+						//this isn't a field that has multiple types, so we don't need to test it
+						break
+					}
+
+					fieldNameWithoutPrefix := field.Name[strings.LastIndex(field.Name, ".")+1 : len(field.Name)-3]
+					log.Println("Here " + identifier + "=" + field.Name)
+					if fieldNameWithoutPrefix == identifier {
+						for _, aType := range field.Types {
+							value, ok := currentFhirOption[identifier+aType]
+							if ok {
+
+								filteredOptions = append(filteredOptions, value)
+								break
+							}
+						}
+					}
+					if len(filteredOptions) > originalSizeOfFilteredOptions {
+						break
+					}
+				}
+				if len(filteredOptions) > originalSizeOfFilteredOptions {
+					break
+				}
+			}
 		}
 	}
 

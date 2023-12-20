@@ -2,6 +2,7 @@ package fhirpath
 
 import (
 	_ "embed"
+	"github.com/halprin/fhirpath/context"
 	"reflect"
 	"testing"
 
@@ -102,7 +103,7 @@ func TestEvaluate_Polymorphism_Exact(t *testing.T) {
 }
 
 func TestEvaluate_Polymorphism_Imprecise(t *testing.T) {
-	result, err := Evaluate[bool](fhirPatient, "Patient.multipleBirth = 1")
+	result, err := EvaluateWithContext[bool](fhirPatient, "Patient.multipleBirth = 1", context.R4())
 
 	assert.NoError(t, err)
 	assert.Contains(t, result, true)
