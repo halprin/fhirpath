@@ -53,12 +53,19 @@ func filterAndMap(fhirOptions []map[string]interface{}, identifier string, conte
 		}
 
 		polymorphismValue := polymorphismSearch(currentFhirOption, context, identifier)
+		if polymorphismValue == "" {
+			// "" means nothing was found
+			continue
+		}
+
 		filteredOptions = append(filteredOptions, polymorphismValue)
 	}
 
 	//the filtered options could contain a slice itself, so those need to be unwrapped
 	return flatten(filteredOptions)
 }
+
+var titler = cases.Title(language.English)
 
 func polymorphismSearch(currentFhirOption map[string]interface{}, context context.Definition, identifier string) interface{} {
 	for _, resource := range context.Resources {
@@ -70,14 +77,15 @@ func polymorphismSearch(currentFhirOption map[string]interface{}, context contex
 			}
 
 			fieldNameWithoutPrefix := field.Name[strings.LastIndex(field.Name, ".")+1 : len(field.Name)-3]
-			if fieldNameWithoutPrefix == identifier {
-				for _, aType := range field.Types {
-					titler := cases.Title(language.English)
-					aType = titler.String(aType)
-					value, ok := currentFhirOption[identifier+aType]
-					if ok {
-						return value
-					}
+			if fieldNameWithoutPrefix != identifier {
+				continue
+			}
+
+			for _, aType := range field.Types {
+				capitalizedType := titler.String(aType)
+				value, ok := currentFhirOption[identifier+capitalizedType]
+				if ok {
+					return value
 				}
 			}
 		}
