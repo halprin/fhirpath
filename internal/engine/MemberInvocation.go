@@ -52,6 +52,7 @@ func filterAndMap(fhirOptions []map[string]interface{}, identifier string, conte
 			continue
 		}
 
+		// the basic search came up empty, so we need to search for polymorphic versions of the identifier.  E.g. multipleBirthInteger.
 		polymorphismValue := polymorphismSearch(currentFhirOption, context, identifier)
 		if polymorphismValue == "" {
 			// "" means nothing was found
