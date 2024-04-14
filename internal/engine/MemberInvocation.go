@@ -49,41 +49,40 @@ func filterAndMap(fhirOptions []map[string]interface{}, identifier string, conte
 		value, ok := currentFhirOption[identifier]
 		if ok {
 			filteredOptions = append(filteredOptions, value)
-		} else {
-			originalSizeOfFilteredOptions := len(filteredOptions)
-			for _, resource := range context.Resources {
-				for _, field := range resource.Fields {
-					endOfFieldName := field.Name[len(field.Name)-3:]
-					if endOfFieldName != "[x]" {
-						//this isn't a field that has multiple types, so we don't need to test it
-						continue
-					}
-
-					fieldNameWithoutPrefix := field.Name[strings.LastIndex(field.Name, ".")+1 : len(field.Name)-3]
-					if fieldNameWithoutPrefix == identifier {
-						for _, aType := range field.Types {
-							titler := cases.Title(language.English)
-							aType = titler.String(aType)
-							value, ok := currentFhirOption[identifier+aType]
-							if ok {
-								filteredOptions = append(filteredOptions, value)
-								break
-							}
-						}
-					}
-					if len(filteredOptions) > originalSizeOfFilteredOptions {
-						break
-					}
-				}
-				if len(filteredOptions) > originalSizeOfFilteredOptions {
-					break
-				}
-			}
+			continue
 		}
+
+		polymorphismValue := polymorphismSearch(currentFhirOption, context, identifier)
+		filteredOptions = append(filteredOptions, polymorphismValue)
 	}
 
 	//the filtered options could contain a slice itself, so those need to be unwrapped
 	return flatten(filteredOptions)
+}
+
+func polymorphismSearch(currentFhirOption map[string]interface{}, context context.Definition, identifier string) interface{} {
+	for _, resource := range context.Resources {
+		for _, field := range resource.Fields {
+			endOfFieldName := field.Name[len(field.Name)-3:]
+			if endOfFieldName != "[x]" {
+				//this isn't a field that has multiple types, so we don't need to test it
+				continue
+			}
+
+			fieldNameWithoutPrefix := field.Name[strings.LastIndex(field.Name, ".")+1 : len(field.Name)-3]
+			if fieldNameWithoutPrefix == identifier {
+				for _, aType := range field.Types {
+					titler := cases.Title(language.English)
+					aType = titler.String(aType)
+					value, ok := currentFhirOption[identifier+aType]
+					if ok {
+						return value
+					}
+				}
+			}
+		}
+	}
+	return ""
 }
 
 func fhirOptionHasRequestedFieldValue[T comparable](fhirOption map[string]interface{}, fieldName string, fieldValue T) bool {
