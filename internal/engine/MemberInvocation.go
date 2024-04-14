@@ -2,12 +2,12 @@ package engine
 
 import (
 	"github.com/halprin/fhirpath/context"
-	"log"
+	"github.com/halprin/fhirpath/internal/grammar"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"strings"
 	"unicode"
 	"unicode/utf8"
-
-	"github.com/halprin/fhirpath/internal/grammar"
 )
 
 // MemberInvocation represents filtering based on a segment after a period in the FHIR path.
@@ -56,16 +56,16 @@ func filterAndMap(fhirOptions []map[string]interface{}, identifier string, conte
 					endOfFieldName := field.Name[len(field.Name)-3:]
 					if endOfFieldName != "[x]" {
 						//this isn't a field that has multiple types, so we don't need to test it
-						break
+						continue
 					}
 
 					fieldNameWithoutPrefix := field.Name[strings.LastIndex(field.Name, ".")+1 : len(field.Name)-3]
-					log.Println("Here " + identifier + "=" + field.Name)
 					if fieldNameWithoutPrefix == identifier {
 						for _, aType := range field.Types {
+							titler := cases.Title(language.English)
+							aType = titler.String(aType)
 							value, ok := currentFhirOption[identifier+aType]
 							if ok {
-
 								filteredOptions = append(filteredOptions, value)
 								break
 							}

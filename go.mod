@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/antlr4-go/antlr/v4 v4.13.0
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/net v0.19.0
+	golang.org/x/text v0.14.0
 )
 
 require (
