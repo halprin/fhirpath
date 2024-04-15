@@ -119,5 +119,4 @@ func TestOfficial_testSliceOfBool(t *testing.T) {
 	for i := 0; i < reflectedSlice.Len(); i++ {
 		t.Log(reflectedSlice.Index(i).Interface())
 	}
-
 }
