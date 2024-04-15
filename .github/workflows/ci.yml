@@ -23,3 +23,7 @@ jobs:
 
     - name: Unit Test
       run: go test ./...
+
+    # Add ignored packages to the `grep -v` segment
+    - name: Vet
+      run: go list ./... | grep -v 'antlrGen$' | while read -r line; do go vet "${line}"; done
