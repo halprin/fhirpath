@@ -1,11 +1,12 @@
 package engine
 
 import (
+	"github.com/halprin/fhirpath/context"
 	"github.com/halprin/fhirpath/internal/grammar"
 )
 
 // InvocationExpression is all about evaluating a child tree, and then evaluate the next child tree given any FHIR option results that came from the previous tree evaluation.
-func (receiver *engine) InvocationExpression(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
+func (receiver *engine) InvocationExpression(fhirOptions []map[string]interface{}, node grammar.Tree, context context.Definition) (*DynamicValue, error) {
 
 	accumulator := fhirOptions
 	var accumulatorDynamicValue *DynamicValue
@@ -13,7 +14,7 @@ func (receiver *engine) InvocationExpression(fhirOptions []map[string]interface{
 	ok := false
 
 	for index, currentChild := range node.Children() {
-		accumulatorDynamicValue, err = receiver.Execute(accumulator, currentChild)
+		accumulatorDynamicValue, err = receiver.Execute(accumulator, currentChild, context)
 		if err != nil {
 			return nil, err
 		}

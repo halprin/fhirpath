@@ -3,18 +3,19 @@ package engine
 import (
 	"errors"
 	"fmt"
+	"github.com/halprin/fhirpath/context"
 
 	"github.com/halprin/fhirpath/internal/grammar"
 )
 
 // IndexerExpression evaluates the left with all of its options, and then returns a specific one depending on the index.
-func (receiver *engine) IndexerExpression(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
-	optionsDynamicValue, err := receiver.Execute(fhirOptions, node.Children()[0])
+func (receiver *engine) IndexerExpression(fhirOptions []map[string]interface{}, node grammar.Tree, context context.Definition) (*DynamicValue, error) {
+	optionsDynamicValue, err := receiver.Execute(fhirOptions, node.Children()[0], context)
 	if err != nil {
 		return nil, err
 	}
 
-	indexDynamicValue, err := receiver.Execute(fhirOptions, node.Children()[1])
+	indexDynamicValue, err := receiver.Execute(fhirOptions, node.Children()[1], context)
 	if err != nil {
 		return nil, err
 	}

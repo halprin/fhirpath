@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"encoding/xml"
 	"fmt"
+	"github.com/halprin/fhirpath/context"
 	"os"
 	"reflect"
 	"strings"
@@ -91,7 +92,7 @@ func officialTestTemplate(expression OfficialExpression, fhir string, expectedRe
 			}
 		}()
 
-		results, err := Evaluate[any](fhir, expression.Expression)
+		results, err := EvaluateWithContext[any](fhir, expression.Expression, context.R4())
 		if err != nil {
 			if expression.Invalid != "" {
 				//this was an expected error

@@ -2,16 +2,17 @@ package engine
 
 import (
 	"fmt"
+	"github.com/halprin/fhirpath/context"
 
 	"github.com/halprin/fhirpath/internal/grammar"
 )
 
-// EqualityExpression evaluates each child node against each FHIR option.  It then does the operation (equaliity, equivalent, not) between the right and the left, for each FHIR option.  This slice of boolean values is returned.
-func (receiver *engine) EqualityExpression(fhirOptions []map[string]interface{}, node grammar.Tree) (*DynamicValue, error) {
+// EqualityExpression evaluates each child node against each FHIR option.  It then does the operation (equality, equivalent, not) between the right and the left, for each FHIR option.  This slice of boolean values is returned.
+func (receiver *engine) EqualityExpression(fhirOptions []map[string]interface{}, node grammar.Tree, context context.Definition) (*DynamicValue, error) {
 	//evaluate each operand against each FHIR option
 
-	leftOperands := receiver.populateOperands(fhirOptions, node.Children()[0])
-	rightOperands := receiver.populateOperands(fhirOptions, node.Children()[1])
+	leftOperands := receiver.populateOperands(fhirOptions, node.Children()[0], context)
+	rightOperands := receiver.populateOperands(fhirOptions, node.Children()[1], context)
 
 	operation := node.TerminalTexts()[0]
 
@@ -26,12 +27,12 @@ func (receiver *engine) EqualityExpression(fhirOptions []map[string]interface{},
 	}
 }
 
-func (receiver *engine) populateOperands(fhirOptions []map[string]interface{}, node grammar.Tree) []interface{} {
+func (receiver *engine) populateOperands(fhirOptions []map[string]interface{}, node grammar.Tree, context context.Definition) []interface{} {
 	var operandValues []interface{}
 
 	for _, fhirOption := range fhirOptions {
 		wrapInSlice := []map[string]interface{}{fhirOption}
-		leftOperand, err := receiver.Execute(wrapInSlice, node)
+		leftOperand, err := receiver.Execute(wrapInSlice, node, context)
 		if err != nil {
 			return nil
 		}

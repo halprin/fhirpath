@@ -2,6 +2,7 @@ package fhirpath
 
 import (
 	_ "embed"
+	"github.com/halprin/fhirpath/context"
 	"reflect"
 	"testing"
 
@@ -89,6 +90,20 @@ func TestEvaluate_Exists_InnerWhere(t *testing.T) {
 
 func TestEvaluate_Equality_Boolean(t *testing.T) {
 	result, err := Evaluate[bool](fhirPatient, "Patient.name.exists() = true")
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, true)
+}
+
+func TestEvaluate_Polymorphism_Exact(t *testing.T) {
+	result, err := Evaluate[bool](fhirPatient, "Patient.multipleBirthInteger = 1")
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, true)
+}
+
+func TestEvaluate_Polymorphism_Imprecise(t *testing.T) {
+	result, err := EvaluateWithContext[bool](fhirPatient, "Patient.multipleBirth = 1", context.R4())
 
 	assert.NoError(t, err)
 	assert.Contains(t, result, true)
