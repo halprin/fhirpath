@@ -109,6 +109,13 @@ func TestEvaluate_Polymorphism_Imprecise(t *testing.T) {
 	assert.Contains(t, result, true)
 }
 
+func TestEvaluate_EscapedIdentifier(t *testing.T) {
+	result, err := EvaluateWithContext[string](fhirPatient, "name.`given`", context.R4())
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, "Jaina")
+}
+
 func TestOfficial_testSliceOfBool(t *testing.T) {
 	booleans := []bool{true, false, true}
 	var obfuscatedBooleans interface{}
