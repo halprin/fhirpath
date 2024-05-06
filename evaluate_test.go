@@ -109,6 +109,20 @@ func TestEvaluate_Polymorphism_Imprecise(t *testing.T) {
 	assert.Contains(t, result, true)
 }
 
+func TestEvaluate_Polymorphism_IsA_WithParenthesis(t *testing.T) {
+	result, err := EvaluateWithContext[bool](fhirPatient, "Patient.multipleBirth.is(Integer)", context.R4())
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, true)
+}
+
+func TestEvaluate_Polymorphism_IsA_WithoutParenthesis(t *testing.T) {
+	result, err := EvaluateWithContext[bool](fhirPatient, "Patient.multipleBirth is Integer", context.R4())
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, true)
+}
+
 func TestOfficial_testSliceOfBool(t *testing.T) {
 	booleans := []bool{true, false, true}
 	var obfuscatedBooleans interface{}
