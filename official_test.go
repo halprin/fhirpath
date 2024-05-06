@@ -51,7 +51,7 @@ func TestOfficial(t *testing.T) {
 
 	for _, group := range officialTests.Groups {
 		for _, test := range group.Tests {
-			testName := fmt.Sprintf("%s/%s", group.Name, test.Name)
+			testName := fmt.Sprintf("%s/%s/%s/%s", group.Name, test.Name, test.InputFile, test.Expression.Expression)
 			totalTests++
 			fhir, err := readFhirTestFile(convertXmlFileNameToJsonFileName(test.InputFile))
 			assert.NoError(t, err)
