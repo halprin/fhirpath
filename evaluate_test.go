@@ -116,8 +116,22 @@ func TestEvaluate_Polymorphism_IsA_WithParenthesis(t *testing.T) {
 	assert.Contains(t, result, true)
 }
 
-func TestEvaluate_Polymorphism_IsA_WithoutParenthesis(t *testing.T) {
+func TestEvaluate_Polymorphism_IsA_LiteralType_WithoutParenthesis(t *testing.T) {
 	result, err := EvaluateWithContext[bool](fhirPatient, "Patient.multipleBirth is Integer", context.R4())
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, true)
+}
+
+func TestEvaluate_Polymorphism_IsA_FhirResourceType_WithoutParenthesis(t *testing.T) {
+	result, err := EvaluateWithContext[bool](fhirBundleOrder, "Bundle.entry.resource[8] is Patient", context.R4())
+
+	assert.NoError(t, err)
+	assert.Contains(t, result, true)
+}
+
+func TestEvaluate_Polymorphism_IsA_FhirSubType_WithoutParenthesis(t *testing.T) {
+	result, err := EvaluateWithContext[bool](fhirBundleOrder, "Bundle.entry.resource[8].name is HumanName", context.R4())
 
 	assert.NoError(t, err)
 	assert.Contains(t, result, true)
