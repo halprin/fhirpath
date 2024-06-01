@@ -46,8 +46,22 @@ func isOperation(dynamicValue *DynamicValue, dynamicTypeIdentifier *DynamicValue
 	var err error
 
 	switch typeIdentifier {
+	case "Boolean":
+		isTypeSlice, err = isDynamicValueSliceIsType[bool](dynamicValue)
+	case "String":
+		isTypeSlice, err = isDynamicValueSliceIsType[string](dynamicValue)
 	case "Integer":
 		isTypeSlice, err = isDynamicValueSliceIsType[int](dynamicValue)
+	case "Decimal":
+		isTypeSlice, err = isDynamicValueSliceIsType[float64](dynamicValue)
+	case "Date":
+		return nil, errors.New("TypeExpression doesn't support the is operation with the Date type yet, it needs to be implemented")
+	case "DateTime":
+		return nil, errors.New("TypeExpression doesn't support the is operation with the DateTime type yet, it needs to be implemented")
+	case "Time":
+		return nil, errors.New("TypeExpression doesn't support the is operation with the Time type yet, it needs to be implemented")
+	case "Quantity":
+		return nil, errors.New("TypeExpression doesn't support the is operation with the Quantity type yet, it needs to be implemented")
 	}
 
 	return isTypeSlice, err
