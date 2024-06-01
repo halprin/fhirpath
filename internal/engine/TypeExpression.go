@@ -45,6 +45,7 @@ func isOperation(dynamicValue *DynamicValue, dynamicTypeIdentifier *DynamicValue
 	var isTypeSlice []bool
 	var err error
 
+	//TODO: implement more literal types
 	switch typeIdentifier {
 	case "Boolean":
 		isTypeSlice, err = isDynamicValueSliceIsType[bool](dynamicValue)
@@ -63,6 +64,8 @@ func isOperation(dynamicValue *DynamicValue, dynamicTypeIdentifier *DynamicValue
 	case "Quantity":
 		return nil, errors.New("TypeExpression doesn't support the is operation with the Quantity type yet, it needs to be implemented")
 	}
+
+	//TODO: implement the FHIR types
 
 	return isTypeSlice, err
 }

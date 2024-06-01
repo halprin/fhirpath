@@ -43,6 +43,9 @@ func (receiver *engine) FunctionInvocation(fhirOptions []map[string]interface{},
 	case "exists":
 		bools, err := exists(fhirOptions, functionParameters)
 		return NewDynamicValue(bools), err
+	case "is":
+		bools, err := is(fhirOptions, functionParameters)
+		return NewDynamicValue(bools), err
 	default:
 		return nil, fmt.Errorf("FunctionInvocation: function name %s is unknown", functionName)
 	}
@@ -71,6 +74,23 @@ func where(fhirOptions []map[string]interface{}, parameters []interface{}) ([]ma
 }
 
 func exists(fhirOptions []map[string]interface{}, parameters []interface{}) ([]bool, error) {
+	if len(parameters) > 0 {
+		//there were parameters which is the equivalent of running where first
+		var err error
+		fhirOptions, err = where(fhirOptions, parameters)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if len(fhirOptions) == 0 {
+		return []bool{false}, nil
+	}
+
+	return []bool{true}, nil
+}
+
+func is(fhirOptions []map[string]interface{}, parameters []interface{}) ([]bool, error) {
 	if len(parameters) > 0 {
 		//there were parameters which is the equivalent of running where first
 		var err error

@@ -4,15 +4,19 @@ import "reflect"
 
 // convertInterfaceSliceToFhirOptionSlice converts a generic `[]interface{}` value to a slice of a FHIR option (`map[string]interface{}`)
 // This is needed for some of the type casting in the execution engine.
-func convertInterfaceSliceToFhirOptionSlice(interfaceSlice []interface{}) []map[string]interface{} {
+func convertInterfaceSliceToFhirOptionSlice(interfaceSlice []interface{}) ([]map[string]interface{}, bool) {
 	fhirOptions := make([]map[string]interface{}, 0, len(interfaceSlice))
 
 	for _, interfaceValue := range interfaceSlice {
-		fhirOption := interfaceValue.(map[string]interface{})
+		fhirOption, ok := interfaceValue.(map[string]interface{})
+		if !ok {
+			return nil, ok
+		}
+
 		fhirOptions = append(fhirOptions, fhirOption)
 	}
 
-	return fhirOptions
+	return fhirOptions, true
 }
 
 // flatten flattens out any inner slices inside the passed in slice.
