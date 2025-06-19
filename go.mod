@@ -1,13 +1,13 @@
 module github.com/halprin/fhirpath
 
-go 1.23
+go 1.23.0
 
-toolchain go1.23.0
+toolchain go1.24.4
 
 require (
 	github.com/antlr4-go/antlr/v4 v4.13.1
-	github.com/stretchr/testify v1.9.0
-	golang.org/x/text v0.17.0
+	github.com/stretchr/testify v1.10.0
+	golang.org/x/text v0.26.0
 )
 
 require (
