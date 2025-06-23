@@ -2,7 +2,7 @@
 
 Evaluates [FHIR Path](https://hl7.org/fhirpath/) against [FHIR](http://hl7.org/fhir/) resources.
 
-This is a work in progress.  36 out of the 686 [official tests](https://hl7.org/fhirpath/tests.html) pass.
+This is a work in progress.  38 out of the 686 [official tests](https://hl7.org/fhirpath/tests.html) pass.
 
 ## Install
 

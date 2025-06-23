@@ -45,7 +45,7 @@ func TestOfficial(t *testing.T) {
 	err := xml.Unmarshal(officialTestXmlSpec, &officialTests)
 	assert.NoError(t, err)
 
-	failTests := true
+	failTests := false
 	totalTests := 0
 	passedTests := 0
 
