@@ -7,7 +7,7 @@ toolchain go1.25.5
 require (
 	github.com/antlr4-go/antlr/v4 v4.13.1
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/text v0.29.0
+	golang.org/x/text v0.32.0
 )
 
 require (
