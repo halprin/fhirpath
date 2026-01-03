@@ -47,12 +47,18 @@ func TestOfficial(t *testing.T) {
 	assert.NoError(t, err)
 
 	failTests := true
+	filterTest := "testObservations/testPolymorphismAsA/observation-example.xml/Observation.value.as(Quantity).unit"
 	totalTests := 0
 	passedTests := 0
 
 	for _, group := range officialTests.Groups {
 		for _, test := range group.Tests {
 			testName := fmt.Sprintf("%s/%s/%s/%s", group.Name, test.Name, test.InputFile, test.Expression.Expression)
+
+			if filterTest != "" && testName != filterTest {
+				continue
+			}
+
 			totalTests++
 			fhir, err := readFhirTestFile(convertXmlFileNameToJsonFileName(test.InputFile))
 			assert.NoError(t, err)
