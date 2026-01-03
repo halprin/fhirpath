@@ -30,10 +30,42 @@ func (receiver *engine) TypeExpression(fhirOptions []map[string]interface{}, nod
 
 		return NewDynamicValue(isTypeSlice), nil
 	} else if operation == "as" {
-		return nil, errors.New("TypeExpression 'as' needs to be implemented")
+		filteredValues, err := asOperation(leftOperands, rightOperands)
+		if err != nil {
+			return nil, err
+		}
+
+		return NewDynamicValue(filteredValues), nil
 	} else {
 		return nil, fmt.Errorf("TypeExpression is not 'is' or 'as', instead it is %s", operation)
 	}
+}
+
+func asOperation(dynamicValue *DynamicValue, dynamicTypeIdentifier *DynamicValue) ([]interface{}, error) {
+	// Check which values match the type
+	isResults, err := isOperation(dynamicValue, dynamicTypeIdentifier)
+	if err != nil {
+		return nil, err
+	}
+
+	sliceSize, err := dynamicValue.SliceSize()
+	if err != nil {
+		return nil, err
+	}
+
+	// Return only values that match the type
+	var filteredValues []interface{}
+	for i := 0; i < sliceSize; i++ {
+		if i < len(isResults) && isResults[i] {
+			value, err := dynamicValue.SliceValueAtIndex(i)
+			if err != nil {
+				return nil, err
+			}
+			filteredValues = append(filteredValues, value)
+		}
+	}
+
+	return filteredValues, nil
 }
 
 func isOperation(dynamicValue *DynamicValue, dynamicTypeIdentifier *DynamicValue) ([]bool, error) {
