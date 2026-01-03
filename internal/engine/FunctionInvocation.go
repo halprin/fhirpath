@@ -104,15 +104,20 @@ func is(fhirOptions []map[string]interface{}, parameters []interface{}) ([]bool,
 		return []bool{}, nil
 	}
 
-	// Extract actual values from fhirOptions (primitive values are wrapped in "value" key)
+	// Extract actual values from fhirOptions
+	// Primitive values are wrapped in {"value": primitive} by convertNonFhirOptionToFhirOption (single key)
+	// Complex FHIR types like Quantity have a "value" field plus other fields (multiple keys)
 	var values []interface{}
 	for _, fhirOption := range fhirOptions {
-		if value, hasValue := fhirOption["value"]; hasValue {
-			values = append(values, value)
-		} else {
-			// It's a full FHIR option, add it as-is
-			values = append(values, fhirOption)
+		if len(fhirOption) == 1 {
+			if value, hasValue := fhirOption["value"]; hasValue {
+				// Single "value" key - this is a wrapped primitive
+				values = append(values, value)
+				continue
+			}
 		}
+		// It's a full FHIR complex type, add it as-is
+		values = append(values, fhirOption)
 	}
 
 	dynamicValue := NewDynamicValue(values)

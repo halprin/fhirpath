@@ -62,12 +62,49 @@ func isOperation(dynamicValue *DynamicValue, dynamicTypeIdentifier *DynamicValue
 	case "Time":
 		return nil, errors.New("TypeExpression doesn't support the is operation with the Time type yet, it needs to be implemented")
 	case "Quantity":
-		return nil, errors.New("TypeExpression doesn't support the is operation with the Quantity type yet, it needs to be implemented")
+		isTypeSlice, err = isDynamicValueSliceIsQuantity(dynamicValue)
 	}
 
 	//TODO: implement the FHIR types
 
 	return isTypeSlice, err
+}
+
+func isDynamicValueSliceIsQuantity(dynamicValue *DynamicValue) ([]bool, error) {
+	sliceSize, err := dynamicValue.SliceSize()
+	if err != nil {
+		return nil, err
+	}
+
+	var isTypeSlice []bool
+
+	for sliceIndex := 0; sliceIndex < sliceSize; sliceIndex++ {
+		currentInterface, err := dynamicValue.SliceValueAtIndex(sliceIndex)
+		if err != nil {
+			return nil, err
+		}
+
+		// Quantity is a map with a "value" key containing a number
+		mapValue, ok := currentInterface.(map[string]interface{})
+		if !ok {
+			isTypeSlice = append(isTypeSlice, false)
+			continue
+		}
+
+		// Check if it has a "value" key with a numeric value (required for Quantity)
+		quantityValue, hasValue := mapValue["value"]
+		if !hasValue {
+			isTypeSlice = append(isTypeSlice, false)
+			continue
+		}
+
+		// Value should be numeric (float64 from JSON)
+		_, isFloat := quantityValue.(float64)
+		_, isInt := quantityValue.(int)
+		isTypeSlice = append(isTypeSlice, isFloat || isInt)
+	}
+
+	return isTypeSlice, nil
 }
 
 func isDynamicValueSliceIsType[T any](dynamicValue *DynamicValue) ([]bool, error) {
