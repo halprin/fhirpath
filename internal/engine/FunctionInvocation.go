@@ -46,6 +46,9 @@ func (receiver *engine) FunctionInvocation(fhirOptions []map[string]interface{},
 	case "is":
 		bools, err := is(fhirOptions, functionParameters)
 		return NewDynamicValue(bools), err
+	case "as":
+		filteredOptions, err := as(fhirOptions, functionParameters)
+		return NewDynamicValue(filteredOptions), err
 	default:
 		return nil, fmt.Errorf("FunctionInvocation: function name %s is unknown", functionName)
 	}
@@ -124,4 +127,34 @@ func is(fhirOptions []map[string]interface{}, parameters []interface{}) ([]bool,
 	dynamicTypeIdentifier := NewDynamicValue(typeIdentifier)
 
 	return isOperation(dynamicValue, dynamicTypeIdentifier)
+}
+
+func as(fhirOptions []map[string]interface{}, parameters []interface{}) ([]map[string]interface{}, error) {
+	if len(parameters) == 0 {
+		return nil, errors.New("FunctionInvocation: as: requires a type parameter")
+	}
+
+	if _, ok := parameters[0].(string); !ok {
+		return nil, errors.New("FunctionInvocation: as: the type parameter must be a string")
+	}
+
+	if len(fhirOptions) == 0 {
+		return []map[string]interface{}{}, nil
+	}
+
+	// Use the is function to check which options match the type
+	isResults, err := is(fhirOptions, parameters)
+	if err != nil {
+		return nil, err
+	}
+
+	// Filter fhirOptions to only those that match the type
+	var filteredOptions []map[string]interface{}
+	for i, fhirOption := range fhirOptions {
+		if i < len(isResults) && isResults[i] {
+			filteredOptions = append(filteredOptions, fhirOption)
+		}
+	}
+
+	return filteredOptions, nil
 }

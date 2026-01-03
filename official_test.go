@@ -47,7 +47,7 @@ func TestOfficial(t *testing.T) {
 	assert.NoError(t, err)
 
 	failTests := true
-	filterTest := "testObservations/testPolymorphismAsA/observation-example.xml/Observation.value.as(Quantity).unit"
+	filterTest := ""
 	totalTests := 0
 	passedTests := 0
 
