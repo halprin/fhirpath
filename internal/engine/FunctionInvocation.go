@@ -134,7 +134,8 @@ func as(fhirOptions []map[string]interface{}, parameters []interface{}) ([]map[s
 		return nil, errors.New("FunctionInvocation: as: requires a type parameter")
 	}
 
-	if _, ok := parameters[0].(string); !ok {
+	typeIdentifier, ok := parameters[0].(string)
+	if !ok {
 		return nil, errors.New("FunctionInvocation: as: the type parameter must be a string")
 	}
 
@@ -142,19 +143,8 @@ func as(fhirOptions []map[string]interface{}, parameters []interface{}) ([]map[s
 		return []map[string]interface{}{}, nil
 	}
 
-	// Use the is function to check which options match the type
-	isResults, err := is(fhirOptions, parameters)
-	if err != nil {
-		return nil, err
-	}
+	dynamicValue := NewDynamicValue(fhirOptions)
+	dynamicTypeIdentifier := NewDynamicValue(typeIdentifier)
 
-	// Filter fhirOptions to only those that match the type
-	var filteredOptions []map[string]interface{}
-	for i, fhirOption := range fhirOptions {
-		if i < len(isResults) && isResults[i] {
-			filteredOptions = append(filteredOptions, fhirOption)
-		}
-	}
-
-	return filteredOptions, nil
+	return asOperation(dynamicValue, dynamicTypeIdentifier)
 }

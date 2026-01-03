@@ -3,6 +3,7 @@ package engine
 import (
 	"errors"
 	"fmt"
+
 	"github.com/halprin/fhirpath/context"
 	"github.com/halprin/fhirpath/internal/grammar"
 )
@@ -36,12 +37,12 @@ func (receiver *engine) TypeExpression(fhirOptions []map[string]interface{}, nod
 		}
 
 		return NewDynamicValue(filteredValues), nil
-	} else {
-		return nil, fmt.Errorf("TypeExpression is not 'is' or 'as', instead it is %s", operation)
 	}
+
+	return nil, fmt.Errorf("TypeExpression is not 'is' or 'as', instead it is %s", operation)
 }
 
-func asOperation(dynamicValue *DynamicValue, dynamicTypeIdentifier *DynamicValue) ([]interface{}, error) {
+func asOperation(dynamicValue *DynamicValue, dynamicTypeIdentifier *DynamicValue) ([]map[string]interface{}, error) {
 	// Check which values match the type
 	isResults, err := isOperation(dynamicValue, dynamicTypeIdentifier)
 	if err != nil {
@@ -54,10 +55,11 @@ func asOperation(dynamicValue *DynamicValue, dynamicTypeIdentifier *DynamicValue
 	}
 
 	// Return only values that match the type
-	var filteredValues []interface{}
+	var filteredValues []map[string]interface{}
 	for i := 0; i < sliceSize; i++ {
 		if i < len(isResults) && isResults[i] {
-			value, err := dynamicValue.SliceValueAtIndex(i)
+			value, err := CastSliceValueAtIndexOfDynamicValue[map[string]interface{}](dynamicValue, i)
+			//value, err := dynamicValue.SliceValueAtIndex(i)
 			if err != nil {
 				return nil, err
 			}
