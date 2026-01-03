@@ -3,8 +3,8 @@ package engine
 import (
 	"errors"
 	"fmt"
-	"github.com/halprin/fhirpath/context"
 
+	"github.com/halprin/fhirpath/context"
 	"github.com/halprin/fhirpath/internal/grammar"
 )
 

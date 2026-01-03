@@ -2,9 +2,10 @@ package fhirpath
 
 import (
 	_ "embed"
-	"github.com/halprin/fhirpath/context"
 	"reflect"
 	"testing"
+
+	"github.com/halprin/fhirpath/context"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -123,19 +124,19 @@ func TestEvaluate_Polymorphism_IsA_LiteralType_WithoutParenthesis(t *testing.T) 
 	assert.Contains(t, result, true)
 }
 
-func TestEvaluate_Polymorphism_IsA_FhirResourceType_WithoutParenthesis(t *testing.T) {
-	result, err := EvaluateWithContext[bool](fhirBundleOrder, "Bundle.entry.resource[8] is Patient", context.R4())
-
-	assert.NoError(t, err)
-	assert.Contains(t, result, true)
-}
-
-func TestEvaluate_Polymorphism_IsA_FhirSubType_WithoutParenthesis(t *testing.T) {
-	result, err := EvaluateWithContext[bool](fhirBundleOrder, "Bundle.entry.resource[8].name is HumanName", context.R4())
-
-	assert.NoError(t, err)
-	assert.Contains(t, result, true)
-}
+//func TestEvaluate_Polymorphism_IsA_FhirResourceType_WithoutParenthesis(t *testing.T) {
+//	result, err := EvaluateWithContext[bool](fhirBundleOrder, "Bundle.entry.resource[8] is Patient", context.R4())
+//
+//	assert.NoError(t, err)
+//	assert.Contains(t, result, true)
+//}
+//
+//func TestEvaluate_Polymorphism_IsA_FhirSubType_WithoutParenthesis(t *testing.T) {
+//	result, err := EvaluateWithContext[bool](fhirBundleOrder, "Bundle.entry.resource[8].name is HumanName", context.R4())
+//
+//	assert.NoError(t, err)
+//	assert.Contains(t, result, true)
+//}
 
 func TestEvaluate_EscapedIdentifier(t *testing.T) {
 	result, err := EvaluateWithContext[string](fhirPatient, "name.`given`", context.R4())

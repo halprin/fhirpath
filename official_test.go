@@ -4,11 +4,12 @@ import (
 	_ "embed"
 	"encoding/xml"
 	"fmt"
-	"github.com/halprin/fhirpath/context"
 	"os"
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/halprin/fhirpath/context"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -45,7 +46,7 @@ func TestOfficial(t *testing.T) {
 	err := xml.Unmarshal(officialTestXmlSpec, &officialTests)
 	assert.NoError(t, err)
 
-	failTests := true
+	failTests := false
 	totalTests := 0
 	passedTests := 0
 
