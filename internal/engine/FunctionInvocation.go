@@ -91,18 +91,32 @@ func exists(fhirOptions []map[string]interface{}, parameters []interface{}) ([]b
 }
 
 func is(fhirOptions []map[string]interface{}, parameters []interface{}) ([]bool, error) {
-	if len(parameters) > 0 {
-		//there were parameters which is the equivalent of running where first
-		var err error
-		fhirOptions, err = where(fhirOptions, parameters)
-		if err != nil {
-			return nil, err
-		}
+	if len(parameters) == 0 {
+		return nil, errors.New("FunctionInvocation: is: requires a type parameter")
+	}
+
+	typeIdentifier, ok := parameters[0].(string)
+	if !ok {
+		return nil, errors.New("FunctionInvocation: is: the type parameter must be a string")
 	}
 
 	if len(fhirOptions) == 0 {
-		return []bool{false}, nil
+		return []bool{}, nil
 	}
 
-	return []bool{true}, nil
+	// Extract actual values from fhirOptions (primitive values are wrapped in "value" key)
+	var values []interface{}
+	for _, fhirOption := range fhirOptions {
+		if value, hasValue := fhirOption["value"]; hasValue {
+			values = append(values, value)
+		} else {
+			// It's a full FHIR option, add it as-is
+			values = append(values, fhirOption)
+		}
+	}
+
+	dynamicValue := NewDynamicValue(values)
+	dynamicTypeIdentifier := NewDynamicValue(typeIdentifier)
+
+	return isOperation(dynamicValue, dynamicTypeIdentifier)
 }

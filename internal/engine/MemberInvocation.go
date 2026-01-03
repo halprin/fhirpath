@@ -21,13 +21,27 @@ func (receiver *engine) MemberInvocation(fhirOptions []map[string]interface{}, n
 
 	firstCharacter, _ := utf8.DecodeRuneInString(identifier)
 	if unicode.IsUpper(firstCharacter) {
-		//wants to filter on a specific resource type.  I.e. 'Patient'.  This is specific to the "resourceType" field.
-		return NewDynamicValue(filterResourceType(fhirOptions, identifier)), nil
+		// Check if any fhirOption has a resourceType field
+		if anyHasResourceType(fhirOptions) {
+			// Filter on a specific resource type. I.e. 'Patient'. This is specific to the "resourceType" field.
+			return NewDynamicValue(filterResourceType(fhirOptions, identifier)), nil
+		}
+		// No resourceType in fhirOptions - treat identifier as type specifier (e.g., for .is(Integer))
+		return NewDynamicValue(identifier), nil
 	}
 
 	//a filter on some generic field.  I.e. gender.
 
 	return NewDynamicValue(filterAndMap(fhirOptions, identifier, context)), nil
+}
+
+func anyHasResourceType(fhirOptions []map[string]interface{}) bool {
+	for _, opt := range fhirOptions {
+		if _, ok := opt["resourceType"]; ok {
+			return true
+		}
+	}
+	return false
 }
 
 func filterResourceType(fhirOptions []map[string]interface{}, identifier string) []map[string]interface{} {
