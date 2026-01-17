@@ -97,11 +97,47 @@ func isOperation(dynamicValue *DynamicValue, dynamicTypeIdentifier *DynamicValue
 		return nil, errors.New("TypeExpression doesn't support the is operation with the Time type yet, it needs to be implemented")
 	case "Quantity":
 		isTypeSlice, err = isDynamicValueSliceIsQuantity(dynamicValue)
+	default:
+		// For unrecognized types, check if it's a FHIR complex type by resourceType or type structure
+		isTypeSlice, err = isDynamicValueSliceIsFhirType(dynamicValue, typeIdentifier)
 	}
 
-	//TODO: implement the FHIR types
-
 	return isTypeSlice, err
+}
+
+func isDynamicValueSliceIsFhirType(dynamicValue *DynamicValue, typeIdentifier string) ([]bool, error) {
+	sliceSize, err := dynamicValue.SliceSize()
+	if err != nil {
+		return nil, err
+	}
+
+	var isTypeSlice []bool
+
+	for sliceIndex := 0; sliceIndex < sliceSize; sliceIndex++ {
+		currentInterface, err := dynamicValue.SliceValueAtIndex(sliceIndex)
+		if err != nil {
+			return nil, err
+		}
+
+		// Check if it's a map (FHIR complex type)
+		mapValue, ok := currentInterface.(map[string]interface{})
+		if !ok {
+			isTypeSlice = append(isTypeSlice, false)
+			continue
+		}
+
+		// Check if resourceType matches
+		if resourceType, hasResourceType := mapValue["resourceType"].(string); hasResourceType {
+			isTypeSlice = append(isTypeSlice, resourceType == typeIdentifier)
+			continue
+		}
+
+		// For non-resource types (like Period, HumanName, etc.), we'd need schema info
+		// For now, return false for unknown types
+		isTypeSlice = append(isTypeSlice, false)
+	}
+
+	return isTypeSlice, nil
 }
 
 func isDynamicValueSliceIsQuantity(dynamicValue *DynamicValue) ([]bool, error) {

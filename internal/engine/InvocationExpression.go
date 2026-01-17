@@ -30,10 +30,12 @@ func (receiver *engine) InvocationExpression(fhirOptions []map[string]interface{
 		accumulator, ok = accumulatorDynamicValue.Value.([]map[string]interface{})
 		if !ok {
 			//it may still be a slice of FHIR options but hidden behind some stupid Go typing hiding
-			interfaceSlice := accumulatorDynamicValue.Value.([]interface{})
-			accumulator, ok = convertInterfaceSliceToFhirOptionSlice(interfaceSlice)
+			interfaceSlice, isInterfaceSlice := accumulatorDynamicValue.Value.([]interface{})
+			if isInterfaceSlice {
+				accumulator, ok = convertInterfaceSliceToFhirOptionSlice(interfaceSlice)
+			}
 			if !ok {
-				//we  have more to do but we no longer have a FHIR option, hack it into a FHIR option
+				//we have more to do but we no longer have a FHIR option, hack it into a FHIR option
 				accumulator, err = convertNonFhirOptionToFhirOption(accumulatorDynamicValue)
 				if err != nil {
 					return nil, errors.New("failed to convert non-FHIR option to FHIR option")

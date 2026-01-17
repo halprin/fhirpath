@@ -49,6 +49,23 @@ func (receiver *engine) FunctionInvocation(fhirOptions []map[string]interface{},
 	case "as":
 		filteredOptions, err := as(fhirOptions, functionParameters)
 		return NewDynamicValue(filteredOptions), err
+	case "empty":
+		return NewDynamicValue([]bool{len(fhirOptions) == 0}), nil
+	case "not":
+		bools, err := not(fhirOptions)
+		return NewDynamicValue(bools), err
+	case "first":
+		return NewDynamicValue(first(fhirOptions)), nil
+	case "last":
+		return NewDynamicValue(last(fhirOptions)), nil
+	case "count":
+		return NewDynamicValue([]int{len(fhirOptions)}), nil
+	case "skip":
+		skipped, err := skip(fhirOptions, functionParameters)
+		return NewDynamicValue(skipped), err
+	case "take":
+		taken, err := take(fhirOptions, functionParameters)
+		return NewDynamicValue(taken), err
 	default:
 		return nil, fmt.Errorf("FunctionInvocation: function name %s is unknown", functionName)
 	}
@@ -147,4 +164,102 @@ func as(fhirOptions []map[string]interface{}, parameters []interface{}) ([]map[s
 	dynamicTypeIdentifier := NewDynamicValue(typeIdentifier)
 
 	return asOperation(dynamicValue, dynamicTypeIdentifier)
+}
+
+func not(fhirOptions []map[string]interface{}) ([]bool, error) {
+	if len(fhirOptions) == 0 {
+		return []bool{}, nil
+	}
+
+	// Extract the boolean value from fhirOptions
+	// The value should be wrapped in {"value": bool}
+	if len(fhirOptions) != 1 {
+		return nil, errors.New("FunctionInvocation: not: expected a single boolean value")
+	}
+
+	value, ok := fhirOptions[0]["value"]
+	if !ok {
+		return nil, errors.New("FunctionInvocation: not: expected a wrapped boolean value")
+	}
+
+	boolValue, ok := value.(bool)
+	if !ok {
+		return nil, errors.New("FunctionInvocation: not: value is not a boolean")
+	}
+
+	return []bool{!boolValue}, nil
+}
+
+func first(fhirOptions []map[string]interface{}) []map[string]interface{} {
+	if len(fhirOptions) == 0 {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{fhirOptions[0]}
+}
+
+func last(fhirOptions []map[string]interface{}) []map[string]interface{} {
+	if len(fhirOptions) == 0 {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{fhirOptions[len(fhirOptions)-1]}
+}
+
+func skip(fhirOptions []map[string]interface{}, parameters []interface{}) ([]map[string]interface{}, error) {
+	if len(parameters) == 0 {
+		return nil, errors.New("FunctionInvocation: skip: requires a count parameter")
+	}
+
+	// The parameter could be an int or wrapped in a slice
+	var count int
+	switch v := parameters[0].(type) {
+	case int:
+		count = v
+	case float64:
+		count = int(v)
+	case []int:
+		if len(v) > 0 {
+			count = v[0]
+		}
+	default:
+		return nil, errors.New("FunctionInvocation: skip: count parameter must be an integer")
+	}
+
+	if count < 0 {
+		count = 0
+	}
+	if count >= len(fhirOptions) {
+		return []map[string]interface{}{}, nil
+	}
+
+	return fhirOptions[count:], nil
+}
+
+func take(fhirOptions []map[string]interface{}, parameters []interface{}) ([]map[string]interface{}, error) {
+	if len(parameters) == 0 {
+		return nil, errors.New("FunctionInvocation: take: requires a count parameter")
+	}
+
+	// The parameter could be an int or wrapped in a slice
+	var count int
+	switch v := parameters[0].(type) {
+	case int:
+		count = v
+	case float64:
+		count = int(v)
+	case []int:
+		if len(v) > 0 {
+			count = v[0]
+		}
+	default:
+		return nil, errors.New("FunctionInvocation: take: count parameter must be an integer")
+	}
+
+	if count < 0 {
+		count = 0
+	}
+	if count >= len(fhirOptions) {
+		return fhirOptions, nil
+	}
+
+	return fhirOptions[:count], nil
 }

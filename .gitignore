@@ -16,3 +16,5 @@
 
 # Ignore VSCode settings files
 .vscode
+
+.claude
