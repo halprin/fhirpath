@@ -32,6 +32,7 @@ type OfficialTest struct {
 	//	Expression string   `xml:"expression"`
 	Expression OfficialExpression `xml:"expression"`
 	InputFile  string             `xml:"inputfile,attr"`
+	Predicate  bool               `xml:"predicate,attr"`
 	Outputs    []string           `xml:"output"`
 }
 
@@ -59,13 +60,15 @@ func TestOfficial(t *testing.T) {
 				continue
 			}
 
-			fhir, err := readFhirTestFile(convertXmlFileNameToJsonFileName(test.InputFile))
-			assert.NoError(t, err)
-			if len(test.Outputs) == 0 {
+			if len(test.Outputs) == 0 || test.Predicate {
 				// Don't run a test that doesn't have any expected outputs for now.
+				// Don't run a test that is a predicate; i.e., only tests if there is any output.
 				continue
 			}
 			totalTests++
+
+			fhir, err := readFhirTestFile(convertXmlFileNameToJsonFileName(test.InputFile))
+			assert.NoError(t, err)
 			passed := t.Run(testName, officialTestTemplate(test.Expression, fhir, test.Outputs, failTests))
 			if passed {
 				passedTests++
