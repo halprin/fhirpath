@@ -22,6 +22,15 @@ The files in @internal/engine/ correspond directly to rules in the ANTLR grammar
 
 Sometimes there are helper functions in other files than listed above that should be called from other grammar engine rules.
 
+## Tests
+
+There are two types of tests.
+
+1. Official FHIRPath unit tests are located in @official_test.go.
+2. Ad hoc unit tests are located in @evaluate_test.go.
+
+If prompted to run a unit test that starts with `TestOfficial`, that means running the official FHIRPath test suite because there are a bunch of subtests in the suite.
+
 ## How to Contribute
 
 When adding new features or fixing bugs:
