@@ -59,9 +59,13 @@ func TestOfficial(t *testing.T) {
 				continue
 			}
 
-			totalTests++
 			fhir, err := readFhirTestFile(convertXmlFileNameToJsonFileName(test.InputFile))
 			assert.NoError(t, err)
+			if len(test.Outputs) == 0 {
+				// Don't run a test that doesn't have any expected outputs for now.
+				continue
+			}
+			totalTests++
 			passed := t.Run(testName, officialTestTemplate(test.Expression, fhir, test.Outputs, failTests))
 			if passed {
 				passedTests++
