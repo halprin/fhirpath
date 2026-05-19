@@ -2,7 +2,7 @@ module github.com/halprin/fhirpath
 
 go 1.25.0
 
-toolchain go1.26.2
+toolchain go1.26.3
 
 require (
 	github.com/antlr4-go/antlr/v4 v4.13.1
